@@ -4,6 +4,8 @@ A static flipbook ready for GitHub Pages. It uses StPageFlip for page-turn anima
 
 The viewer is styled after hosted magazine readers: dark stage, centered book, side page buttons, top utility toolbar, and bottom page scrubber.
 
+Browsers only allow true fullscreen after a user gesture. The app requests fullscreen on launch where permitted, otherwise it opens in a full-window viewer and the fullscreen toolbar button remains available.
+
 ## Add Pages
 
 1. Add image files to `pages/`.

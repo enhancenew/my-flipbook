@@ -18,7 +18,8 @@
 
 html,
 body {
-  min-height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 body {
@@ -45,6 +46,8 @@ svg {
 }
 
 .flip-viewer {
+  width: 100vw;
+  height: 100vh;
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
@@ -63,7 +66,7 @@ svg {
   border-bottom: 1px solid rgba(255, 255, 255, 0.10);
   background: linear-gradient(180deg, rgba(17, 19, 23, 0.92), rgba(17, 19, 23, 0.74));
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px);
 }
 
 .brand-block {
@@ -150,8 +153,8 @@ h1 {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
   background-size: 42px 42px;
   mask-image: radial-gradient(circle at center, black, transparent 78%);
   pointer-events: none;
@@ -166,6 +169,7 @@ h1 {
   min-height: 420px;
   transform: scale(var(--book-scale));
   transition: transform 180ms ease;
+  will-change: transform;
 }
 
 .book-shadow {
@@ -197,7 +201,8 @@ h1 {
 
 .book canvas {
   border-radius: 2px;
-  filter: drop-shadow(0 22px 32px rgba(0, 0, 0, 0.48));
+  box-shadow: 0 22px 32px rgba(0, 0, 0, 0.38);
+  will-change: transform;
 }
 
 .fallback-page {
@@ -272,7 +277,7 @@ h1 {
   padding: 12px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.10);
   background: linear-gradient(180deg, rgba(17, 19, 23, 0.42), rgba(8, 10, 13, 0.88));
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px);
 }
 
 .dock-button {
