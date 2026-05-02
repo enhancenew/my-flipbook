@@ -19,7 +19,7 @@ const totalPages = 10; // adjust to your image count
 for (let i = 1; i <= totalPages; i++) {
   pageFlip.loadFromHTML(`
     <div class="page">
-      <img src="images/${i}_try.jpg" style="width:100%;height:100%;object-fit:cover;">
+      <img src="images/${i}_try.svg" style="width:100%;height:100%;object-fit:cover;">
     </div>
   `);
 }
