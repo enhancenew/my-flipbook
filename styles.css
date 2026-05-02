@@ -195,6 +195,7 @@ h1 {
 
 .book {
   width: 100%;
+  min-width: min(100%, 560px);
   max-width: 100%;
   height: 100%;
 }
@@ -339,6 +340,10 @@ button:disabled {
   .book-viewport {
     height: min(100%, calc(100vh - 156px));
     min-height: 360px;
+  }
+
+  .book {
+    min-width: 0;
   }
 
   .side-button {

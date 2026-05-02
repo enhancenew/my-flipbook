@@ -94,7 +94,7 @@
         maxHeight: 840,
         drawShadow: false,
         flippingTime: 700,
-        usePortrait: true,
+        usePortrait: false,
         startZIndex: 2,
         autoSize: true,
         maxShadowOpacity: 0.22,

@@ -6,6 +6,8 @@ The viewer is styled after hosted magazine readers: dark stage, centered book, s
 
 Browsers only allow true fullscreen after a user gesture. The app requests fullscreen on launch where permitted, otherwise it opens in a full-window viewer and the fullscreen toolbar button remains available.
 
+The flipbook is configured in book-spread mode: page 1 is treated as the cover, then pages 2 and 3 appear as the first open spread.
+
 ## Add Pages
 
 1. Add image files to `pages/`.
