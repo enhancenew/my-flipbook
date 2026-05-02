@@ -2,6 +2,8 @@
   const els = {
     book: document.getElementById("book"),
     bookViewport: document.getElementById("bookViewport"),
+    closedCover: document.getElementById("closedCover"),
+    closedCoverImage: document.getElementById("closedCoverImage"),
     emptyState: document.getElementById("emptyState"),
     pageCurrent: document.getElementById("pageCurrent"),
     pageTotal: document.getElementById("pageTotal"),
@@ -72,7 +74,8 @@
   function initViewer(paths) {
     pageCount = paths.length;
     els.emptyState.hidden = pageCount > 0;
-    els.book.hidden = pageCount === 0;
+    els.closedCover.hidden = pageCount === 0;
+    els.book.hidden = true;
     els.pageSlider.max = String(Math.max(pageCount, 1));
 
     if (pageCount === 0) {
@@ -82,18 +85,28 @@
 
     isCoverMode = true;
     els.bookViewport.classList.add("is-cover-mode");
-    initFlipbook(paths, 0);
+    els.closedCoverImage.src = paths[0];
+    els.closedCoverImage.alt = "Flipbook cover";
+    updateCounter(0);
   }
 
   function openBookAtFirstSpread() {
-    if (!isCoverMode || pageCount <= 1 || !pageFlip) {
+    if (!isCoverMode || pageCount <= 1) {
       return;
     }
 
     isCoverMode = false;
     els.bookViewport.classList.remove("is-cover-mode");
+    els.closedCover.hidden = true;
+    els.book.hidden = false;
+
+    if (!pageFlip) {
+      initFlipbook(imagePaths, Math.min(1, pageCount - 1));
+      return;
+    }
+
     beginFlip();
-    pageFlip.flipNext("top");
+    pageFlip.flip(Math.min(1, pageCount - 1), "top");
   }
 
   function initFlipbook(paths, startPageIndex) {
@@ -239,11 +252,9 @@
 
   function showCover() {
     isFlipping = false;
-    if (pageFlip) {
-      pageFlip.turnToPage(0);
-      pageFlip.update();
-    }
     syncCoverMode(0);
+    els.book.hidden = true;
+    els.closedCover.hidden = false;
     updateCounter(0);
   }
 
@@ -367,6 +378,12 @@
       playPageTurnSound();
       fallbackPageIndex = pageCount - 1;
       renderFallback();
+    }
+  });
+  els.closedCover.addEventListener("click", () => {
+    if (!isFlipping) {
+      playPageTurnSound();
+      openBookAtFirstSpread();
     }
   });
   els.zoomOut.addEventListener("click", () => setZoom(zoom - 0.1));

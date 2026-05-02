@@ -210,8 +210,34 @@ h1 {
   will-change: transform;
 }
 
-.book-viewport.is-cover-mode .book {
-  transform: translateX(-25%) translateZ(0);
+.closed-cover {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: min(38vw, 440px);
+  height: min(72vh, 620px);
+  border: 0;
+  border-radius: 3px;
+  padding: 0;
+  background: #fff;
+  cursor: pointer;
+  box-shadow:
+    12px 0 9px rgba(255, 255, 255, 0.30),
+    16px 0 2px rgba(0, 0, 0, 0.32),
+    0 28px 70px rgba(0, 0, 0, 0.50);
+  overflow: hidden;
+}
+
+.closed-cover[hidden] {
+  display: none;
+}
+
+.closed-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
 }
 
 .book-viewport.is-cover-mode .book-shadow {
@@ -413,6 +439,11 @@ button:disabled {
 
   .book {
     min-width: 0;
+  }
+
+  .closed-cover {
+    width: min(72vw, 360px);
+    height: min(68vh, 520px);
   }
 
   .side-button {

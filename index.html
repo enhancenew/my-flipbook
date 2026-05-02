@@ -38,6 +38,9 @@
         <div class="book-viewport" id="bookViewport">
           <div class="book-shadow" aria-hidden="true"></div>
           <div class="book-frame">
+            <button class="closed-cover" id="closedCover" type="button" aria-label="Open flipbook">
+              <img id="closedCoverImage" alt="Flipbook cover">
+            </button>
             <div class="book" id="book" aria-live="polite"></div>
             <div class="empty-state" id="emptyState">
               Add images to <code>pages/</code>, run <code>npm run build</code>, and publish.
