@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600" role="img" aria-labelledby="title desc">
+  <title id="title">Gallery Page</title>
+  <desc id="desc">A sample gallery layout page.</desc>
+  <rect width="1200" height="1600" fill="#fffdf8"/>
+  <text x="100" y="170" fill="#1d252d" font-family="Arial, sans-serif" font-size="64" font-weight="700">Gallery</text>
+  <rect x="100" y="250" width="455" height="455" rx="18" fill="#b7d7e8"/>
+  <rect x="645" y="250" width="455" height="455" rx="18" fill="#f3c969"/>
+  <rect x="100" y="795" width="455" height="455" rx="18" fill="#ef8354"/>
+  <rect x="645" y="795" width="455" height="455" rx="18" fill="#7fb069"/>
+  <text x="100" y="1390" fill="#64717d" font-family="Arial, sans-serif" font-size="34">Replace this SVG with your own JPG, PNG, WEBP, or SVG pages.</text>
+</svg>

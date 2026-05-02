@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Custom Flipbook</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="reader" aria-label="Flipbook reader">
+        <div class="topbar">
+          <div>
+            <p class="kicker">GitHub Pages Flipbook</p>
+            <h1>Custom Flipbook</h1>
+          </div>
+          <div class="counter" aria-live="polite">
+            <span id="pageCurrent">1</span>
+            <span>/</span>
+            <span id="pageTotal">1</span>
+          </div>
+        </div>
+
+        <div class="book-wrap">
+          <button class="nav-button" id="prevPage" type="button" aria-label="Previous page">
+            <span aria-hidden="true">‹</span>
+          </button>
+
+          <div class="book" id="book" aria-live="polite">
+            <div class="book-spine" aria-hidden="true"></div>
+            <article class="page page-left">
+              <img id="leftImage" alt="">
+            </article>
+            <article class="page page-right">
+              <img id="rightImage" alt="">
+            </article>
+            <div class="empty-state" id="emptyState">
+              Add images to <code>pages/</code>, run <code>npm run build</code>, and publish.
+            </div>
+          </div>
+
+          <button class="nav-button" id="nextPage" type="button" aria-label="Next page">
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+
+        <div class="controls">
+          <button id="firstPage" type="button">First</button>
+          <button id="lastPage" type="button">Last</button>
+          <button id="fullscreen" type="button">Fullscreen</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

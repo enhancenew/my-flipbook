@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-05-02T21:15:12.214Z",
+  "pages": [
+    {
+      "name": "01-cover.svg",
+      "src": "pages/01-cover.svg",
+      "alt": "01 cover"
+    },
+    {
+      "name": "02-gallery.svg",
+      "src": "pages/02-gallery.svg",
+      "alt": "02 gallery"
+    },
+    {
+      "name": "03-story.svg",
+      "src": "pages/03-story.svg",
+      "alt": "03 story"
+    },
+    {
+      "name": "04-end.svg",
+      "src": "pages/04-end.svg",
+      "alt": "04 end"
+    }
+  ]
+}

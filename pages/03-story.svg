@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600" role="img" aria-labelledby="title desc">
+  <title id="title">Story Page</title>
+  <desc id="desc">A sample story page with text and image blocks.</desc>
+  <rect width="1200" height="1600" fill="#f7f1e8"/>
+  <rect x="95" y="95" width="1010" height="575" rx="24" fill="#1d252d"/>
+  <circle cx="295" cy="330" r="110" fill="#f3c969"/>
+  <path d="M95 585 L310 420 L470 535 L650 360 L1105 650 L95 650 Z" fill="#0f766e"/>
+  <text x="100" y="805" fill="#1d252d" font-family="Arial, sans-serif" font-size="64" font-weight="700">Tell the story</text>
+  <rect x="100" y="890" width="820" height="30" rx="15" fill="#c9d1d9"/>
+  <rect x="100" y="960" width="930" height="30" rx="15" fill="#c9d1d9"/>
+  <rect x="100" y="1030" width="760" height="30" rx="15" fill="#c9d1d9"/>
+  <rect x="100" y="1100" width="880" height="30" rx="15" fill="#c9d1d9"/>
+  <rect x="100" y="1255" width="1000" height="210" rx="24" fill="#ffffff"/>
+  <text x="150" y="1378" fill="#0f766e" font-family="Arial, sans-serif" font-size="40" font-weight="700">Images are ordered naturally by filename.</text>
+</svg>
