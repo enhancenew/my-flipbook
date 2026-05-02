@@ -29,6 +29,7 @@
   let audioContext = null;
   let imagePaths = [];
   let isCoverMode = true;
+  let coverOpenTimer = null;
 
   async function loadPages() {
     try {
@@ -96,18 +97,29 @@
     }
 
     isCoverMode = false;
-    els.coverPage.hidden = true;
     els.book.hidden = false;
     els.bookViewport.classList.remove("is-cover-mode");
+    els.bookViewport.classList.add("is-opening");
+    isFlipping = true;
 
     if (pageFlip) {
       pageFlip.turnToPage(Math.min(1, pageCount - 1));
       pageFlip.update();
       updateCounter(pageFlip.getCurrentPageIndex());
-      return;
+    } else {
+      initFlipbook(imagePaths, Math.min(1, pageCount - 1));
     }
 
-    initFlipbook(imagePaths, Math.min(1, pageCount - 1));
+    if (coverOpenTimer) {
+      window.clearTimeout(coverOpenTimer);
+    }
+
+    coverOpenTimer = window.setTimeout(() => {
+      els.coverPage.hidden = true;
+      els.bookViewport.classList.remove("is-opening");
+      isFlipping = false;
+      coverOpenTimer = null;
+    }, 760);
   }
 
   function initFlipbook(paths, startPageIndex) {
@@ -239,11 +251,17 @@
   }
 
   function showCover() {
+    if (coverOpenTimer) {
+      window.clearTimeout(coverOpenTimer);
+      coverOpenTimer = null;
+    }
+
     isFlipping = false;
     isCoverMode = true;
     els.book.hidden = true;
     els.coverPage.hidden = false;
     els.bookViewport.classList.add("is-cover-mode");
+    els.bookViewport.classList.remove("is-opening");
     updateCounter(0);
   }
 
