@@ -20,17 +20,19 @@
   let pageFlip = null;
   let pageCount = 0;
   let zoom = 1;
+  let fallbackPages = [];
+  let fallbackPageIndex = 0;
 
   async function loadPages() {
     try {
-      const response = await fetch("pages.json", { cache: "no-store" });
+      const response = await fetch(new URL("pages.json", document.baseURI), { cache: "no-store" });
       if (!response.ok) {
         throw new Error("Missing pages.json");
       }
 
       const manifest = await response.json();
       const pages = Array.isArray(manifest.pages) ? manifest.pages : [];
-      initFlipbook(pages.map((page) => page.src));
+      initFlipbook(pages.map((page) => new URL(page.src, document.baseURI).href));
     } catch (error) {
       initFlipbook([]);
     }
@@ -48,36 +50,56 @@
     }
 
     if (!window.St || !window.St.PageFlip) {
-      els.emptyState.hidden = false;
-      els.book.hidden = true;
-      els.emptyState.textContent = "The flipbook library could not be loaded.";
-      updateCounter(0);
+      initFallback(imagePaths);
       return;
     }
 
-    pageFlip = new window.St.PageFlip(els.book, {
-      width: 560,
-      height: 760,
-      size: "stretch",
-      minWidth: 280,
-      maxWidth: 620,
-      minHeight: 380,
-      maxHeight: 840,
-      drawShadow: true,
-      flippingTime: 1000,
-      usePortrait: true,
-      startZIndex: 2,
-      autoSize: true,
-      maxShadowOpacity: 0.58,
-      showCover: true,
-      mobileScrollSupport: true,
-      swipeDistance: 24
-    });
+    try {
+      pageFlip = new window.St.PageFlip(els.book, {
+        width: 560,
+        height: 760,
+        size: "stretch",
+        minWidth: 280,
+        maxWidth: 620,
+        minHeight: 380,
+        maxHeight: 840,
+        drawShadow: true,
+        flippingTime: 1000,
+        usePortrait: true,
+        startZIndex: 2,
+        autoSize: true,
+        maxShadowOpacity: 0.58,
+        showCover: true,
+        mobileScrollSupport: true,
+        swipeDistance: 24
+      });
 
-    pageFlip.on("init", (event) => updateCounter(event.data.page));
-    pageFlip.on("flip", (event) => updateCounter(event.data));
-    pageFlip.on("changeOrientation", () => updateCounter(pageFlip.getCurrentPageIndex()));
-    pageFlip.loadFromImages(imagePaths);
+      pageFlip.on("init", (event) => updateCounter(event.data.page));
+      pageFlip.on("flip", (event) => updateCounter(event.data));
+      pageFlip.on("changeOrientation", () => updateCounter(pageFlip.getCurrentPageIndex()));
+      pageFlip.loadFromImages(imagePaths);
+    } catch (error) {
+      pageFlip = null;
+      initFallback(imagePaths);
+    }
+  }
+
+  function initFallback(imagePaths) {
+    fallbackPages = imagePaths;
+    fallbackPageIndex = 0;
+    els.book.innerHTML = '<img class="fallback-page" alt="Flipbook page">';
+    renderFallback();
+  }
+
+  function renderFallback() {
+    const img = els.book.querySelector(".fallback-page");
+    if (!img || fallbackPages.length === 0) {
+      return;
+    }
+
+    img.src = fallbackPages[fallbackPageIndex];
+    img.alt = `Flipbook page ${fallbackPageIndex + 1}`;
+    updateCounter(fallbackPageIndex);
   }
 
   function updateCounter(pageIndex) {
@@ -99,12 +121,18 @@
   function flipNext() {
     if (pageFlip) {
       pageFlip.flipNext("top");
+    } else if (fallbackPageIndex < pageCount - 1) {
+      fallbackPageIndex += 1;
+      renderFallback();
     }
   }
 
   function flipPrev() {
     if (pageFlip) {
       pageFlip.flipPrev("top");
+    } else if (fallbackPageIndex > 0) {
+      fallbackPageIndex -= 1;
+      renderFallback();
     }
   }
 
@@ -122,8 +150,22 @@
   els.nextDock.addEventListener("click", flipNext);
   els.prevPage.addEventListener("click", flipPrev);
   els.prevDock.addEventListener("click", flipPrev);
-  els.firstPage.addEventListener("click", () => pageFlip && pageFlip.flip(0, "top"));
-  els.lastPage.addEventListener("click", () => pageFlip && pageFlip.flip(pageCount - 1, "top"));
+  els.firstPage.addEventListener("click", () => {
+    if (pageFlip) {
+      pageFlip.flip(0, "top");
+    } else {
+      fallbackPageIndex = 0;
+      renderFallback();
+    }
+  });
+  els.lastPage.addEventListener("click", () => {
+    if (pageFlip) {
+      pageFlip.flip(pageCount - 1, "top");
+    } else {
+      fallbackPageIndex = pageCount - 1;
+      renderFallback();
+    }
+  });
   els.zoomOut.addEventListener("click", () => setZoom(zoom - 0.1));
   els.zoomIn.addEventListener("click", () => setZoom(zoom + 0.1));
 
@@ -131,6 +173,9 @@
     if (pageFlip) {
       pageFlip.turnToPage(Number(els.pageSlider.value) - 1);
       updateCounter(pageFlip.getCurrentPageIndex());
+    } else {
+      fallbackPageIndex = Number(els.pageSlider.value) - 1;
+      renderFallback();
     }
   });
 

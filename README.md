@@ -22,11 +22,13 @@ node scripts/generate-pages-manifest.js
 
 The build script loops through the files in `pages/` and writes `pages.json`, so images do not need to be manually listed in the app.
 
-The frontend loads StPageFlip from jsDelivr:
+The frontend uses a local copy of StPageFlip:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
+<script src="vendor/page-flip.browser.min.js"></script>
 ```
+
+If the library cannot initialize, the page falls back to a simple image reader so GitHub Pages never shows a blank viewer.
 
 ## Publish
 
