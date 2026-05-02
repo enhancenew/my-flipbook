@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600" role="img" aria-labelledby="title desc">
+  <title id="title">Custom Flipbook Cover</title>
+  <desc id="desc">Cover page for a custom flipbook.</desc>
+  <rect width="1200" height="1600" fill="#f8fafc"/>
+  <rect x="90" y="90" width="1020" height="1420" rx="34" fill="#0f766e"/>
+  <path d="M180 1230 C360 1080 470 1310 620 1150 C790 970 920 1160 1030 980 L1030 1420 L180 1420 Z" fill="#f3c969"/>
+  <circle cx="910" cy="340" r="130" fill="#ef8354"/>
+  <text x="180" y="310" fill="#ffffff" font-family="Arial, sans-serif" font-size="88" font-weight="700">Custom</text>
+  <text x="180" y="405" fill="#ffffff" font-family="Arial, sans-serif" font-size="88" font-weight="700">Flipbook</text>
+  <text x="184" y="505" fill="#d7fffb" font-family="Arial, sans-serif" font-size="34">Drop images into pages/ and build.</text>
+</svg>
