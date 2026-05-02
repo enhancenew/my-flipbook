@@ -24,6 +24,7 @@
   let fallbackPageIndex = 0;
   let isFlipping = false;
   let flipGuardTimer = null;
+  let audioContext = null;
 
   async function loadPages() {
     try {
@@ -161,8 +162,10 @@
 
     if (pageFlip) {
       beginFlip();
+      playPageTurnSound();
       pageFlip.flipNext("top");
     } else if (fallbackPageIndex < pageCount - 1) {
+      playPageTurnSound();
       fallbackPageIndex += 1;
       renderFallback();
     }
@@ -175,8 +178,10 @@
 
     if (pageFlip) {
       beginFlip();
+      playPageTurnSound();
       pageFlip.flipPrev("top");
     } else if (fallbackPageIndex > 0) {
+      playPageTurnSound();
       fallbackPageIndex -= 1;
       renderFallback();
     }
@@ -203,6 +208,64 @@
     }, 900);
   }
 
+  function getAudioContext() {
+    if (!window.AudioContext && !window.webkitAudioContext) {
+      return null;
+    }
+
+    if (!audioContext) {
+      const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+      audioContext = new AudioContextCtor();
+    }
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume().catch(() => {});
+    }
+
+    return audioContext;
+  }
+
+  function playPageTurnSound() {
+    const context = getAudioContext();
+    if (!context) {
+      return;
+    }
+
+    const duration = 0.24;
+    const sampleRate = context.sampleRate;
+    const frameCount = Math.floor(sampleRate * duration);
+    const buffer = context.createBuffer(1, frameCount, sampleRate);
+    const samples = buffer.getChannelData(0);
+
+    for (let i = 0; i < frameCount; i += 1) {
+      const progress = i / frameCount;
+      const decay = Math.pow(1 - progress, 2.4);
+      const flutter = Math.sin(progress * Math.PI * 34) * 0.16;
+      samples[i] = (Math.random() * 2 - 1) * decay * (0.34 + flutter);
+    }
+
+    const source = context.createBufferSource();
+    const filter = context.createBiquadFilter();
+    const gain = context.createGain();
+    const now = context.currentTime;
+
+    filter.type = "bandpass";
+    filter.frequency.setValueAtTime(1300, now);
+    filter.frequency.exponentialRampToValueAtTime(420, now + duration);
+    filter.Q.setValueAtTime(0.72, now);
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.16, now + 0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+    source.buffer = buffer;
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(context.destination);
+    source.start(now);
+    source.stop(now + duration);
+  }
+
   els.nextPage.addEventListener("click", flipNext);
   els.nextDock.addEventListener("click", flipNext);
   els.prevPage.addEventListener("click", flipPrev);
@@ -214,8 +277,10 @@
 
     if (pageFlip) {
       beginFlip();
+      playPageTurnSound();
       pageFlip.flip(0, "top");
     } else {
+      playPageTurnSound();
       fallbackPageIndex = 0;
       renderFallback();
     }
@@ -227,8 +292,10 @@
 
     if (pageFlip) {
       beginFlip();
+      playPageTurnSound();
       pageFlip.flip(pageCount - 1, "top");
     } else {
+      playPageTurnSound();
       fallbackPageIndex = pageCount - 1;
       renderFallback();
     }
@@ -243,9 +310,11 @@
     }
 
     if (pageFlip) {
+      playPageTurnSound();
       pageFlip.turnToPage(Number(els.pageSlider.value) - 1);
       updateCounter(pageFlip.getCurrentPageIndex());
     } else {
+      playPageTurnSound();
       fallbackPageIndex = Number(els.pageSlider.value) - 1;
       renderFallback();
     }
