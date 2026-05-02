@@ -2,8 +2,6 @@
   const els = {
     book: document.getElementById("book"),
     bookViewport: document.getElementById("bookViewport"),
-    coverPage: document.getElementById("coverPage"),
-    coverImage: document.getElementById("coverImage"),
     emptyState: document.getElementById("emptyState"),
     pageCurrent: document.getElementById("pageCurrent"),
     pageTotal: document.getElementById("pageTotal"),
@@ -28,8 +26,7 @@
   let flipGuardTimer = null;
   let audioContext = null;
   let imagePaths = [];
-  let isCoverMode = true;
-  let coverOpenTimer = null;
+  let isCoverMode = false;
 
   async function loadPages() {
     try {
@@ -75,8 +72,7 @@
   function initViewer(paths) {
     pageCount = paths.length;
     els.emptyState.hidden = pageCount > 0;
-    els.coverPage.hidden = pageCount === 0;
-    els.book.hidden = true;
+    els.book.hidden = pageCount === 0;
     els.pageSlider.max = String(Math.max(pageCount, 1));
 
     if (pageCount === 0) {
@@ -86,40 +82,18 @@
 
     isCoverMode = true;
     els.bookViewport.classList.add("is-cover-mode");
-    els.coverImage.src = paths[0];
-    els.coverImage.alt = "Book cover";
-    updateCounter(0);
+    initFlipbook(paths, 0);
   }
 
   function openBookAtFirstSpread() {
-    if (!isCoverMode || pageCount <= 1) {
+    if (!isCoverMode || pageCount <= 1 || !pageFlip) {
       return;
     }
 
     isCoverMode = false;
-    els.book.hidden = false;
     els.bookViewport.classList.remove("is-cover-mode");
-    els.bookViewport.classList.add("is-opening");
-    isFlipping = true;
-
-    if (pageFlip) {
-      pageFlip.turnToPage(Math.min(1, pageCount - 1));
-      pageFlip.update();
-      updateCounter(pageFlip.getCurrentPageIndex());
-    } else {
-      initFlipbook(imagePaths, Math.min(1, pageCount - 1));
-    }
-
-    if (coverOpenTimer) {
-      window.clearTimeout(coverOpenTimer);
-    }
-
-    coverOpenTimer = window.setTimeout(() => {
-      els.coverPage.hidden = true;
-      els.bookViewport.classList.remove("is-opening");
-      isFlipping = false;
-      coverOpenTimer = null;
-    }, 760);
+    beginFlip();
+    pageFlip.flipNext("top");
   }
 
   function initFlipbook(paths, startPageIndex) {
@@ -152,7 +126,10 @@
       });
 
       pageFlip.on("init", (event) => updateCounter(event.data.page));
-      pageFlip.on("flip", (event) => updateCounter(event.data));
+      pageFlip.on("flip", (event) => {
+        syncCoverMode(event.data);
+        updateCounter(event.data);
+      });
       pageFlip.on("changeState", (event) => {
         isFlipping = event.data !== "read";
         if (!isFlipping && flipGuardTimer) {
@@ -234,8 +211,9 @@
     }
 
     if (pageFlip && pageFlip.getCurrentPageIndex() <= 1) {
+      beginFlip();
       playPageTurnSound();
-      showCover();
+      pageFlip.flipPrev("top");
       return;
     }
 
@@ -251,18 +229,18 @@
   }
 
   function showCover() {
-    if (coverOpenTimer) {
-      window.clearTimeout(coverOpenTimer);
-      coverOpenTimer = null;
-    }
-
     isFlipping = false;
-    isCoverMode = true;
-    els.book.hidden = true;
-    els.coverPage.hidden = false;
-    els.bookViewport.classList.add("is-cover-mode");
-    els.bookViewport.classList.remove("is-opening");
+    if (pageFlip) {
+      pageFlip.turnToPage(0);
+      pageFlip.update();
+    }
+    syncCoverMode(0);
     updateCounter(0);
+  }
+
+  function syncCoverMode(pageIndex) {
+    isCoverMode = pageIndex === 0;
+    els.bookViewport.classList.toggle("is-cover-mode", isCoverMode);
   }
 
   function setZoom(nextZoom) {
@@ -372,6 +350,7 @@
     }
 
     if (pageFlip) {
+      syncCoverMode(pageCount - 1);
       beginFlip();
       playPageTurnSound();
       pageFlip.flip(pageCount - 1, "top");
@@ -379,12 +358,6 @@
       playPageTurnSound();
       fallbackPageIndex = pageCount - 1;
       renderFallback();
-    }
-  });
-  els.coverPage.addEventListener("click", () => {
-    if (!isFlipping) {
-      playPageTurnSound();
-      openBookAtFirstSpread();
     }
   });
   els.zoomOut.addEventListener("click", () => setZoom(zoom - 0.1));
