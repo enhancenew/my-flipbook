@@ -2,6 +2,8 @@
 
 A static flipbook ready for GitHub Pages. It uses StPageFlip for page-turn animation and a small build script to generate `pages.json` from the images in `pages/`.
 
+The viewer is styled after hosted magazine readers: dark stage, centered book, side page buttons, top utility toolbar, and bottom page scrubber.
+
 ## Add Pages
 
 1. Add image files to `pages/`.
