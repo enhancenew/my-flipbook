@@ -1,6 +1,6 @@
 # Custom Flipbook
 
-A static flipbook ready for GitHub Pages. Put your page images in `pages/`, generate `pages.json`, and publish the repository.
+A static flipbook ready for GitHub Pages. It uses StPageFlip for page-turn animation and a small build script to generate `pages.json` from the images in `pages/`.
 
 ## Add Pages
 
@@ -19,6 +19,12 @@ node scripts/generate-pages-manifest.js
 ```
 
 The build script loops through the files in `pages/` and writes `pages.json`, so images do not need to be manually listed in the app.
+
+The frontend loads StPageFlip from jsDelivr:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
+```
 
 ## Publish
 

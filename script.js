@@ -1,14 +1,7 @@
 (function () {
-  const state = {
-    pages: [],
-    spread: 0,
-    isMobile: window.matchMedia("(max-width: 760px)").matches
-  };
-
   const els = {
     book: document.getElementById("book"),
-    leftImage: document.getElementById("leftImage"),
-    rightImage: document.getElementById("rightImage"),
+    emptyState: document.getElementById("emptyState"),
     pageCurrent: document.getElementById("pageCurrent"),
     pageTotal: document.getElementById("pageTotal"),
     prevPage: document.getElementById("prevPage"),
@@ -18,6 +11,9 @@
     fullscreen: document.getElementById("fullscreen")
   };
 
+  let pageFlip = null;
+  let pageCount = 0;
+
   async function loadPages() {
     try {
       const response = await fetch("pages.json", { cache: "no-store" });
@@ -26,80 +22,85 @@
       }
 
       const manifest = await response.json();
-      state.pages = Array.isArray(manifest.pages) ? manifest.pages : [];
+      const pages = Array.isArray(manifest.pages) ? manifest.pages : [];
+      initFlipbook(pages.map((page) => page.src));
     } catch (error) {
-      state.pages = [];
+      initFlipbook([]);
     }
-
-    render();
   }
 
-  function currentIndex() {
-    return state.isMobile ? state.spread : state.spread * 2;
-  }
+  function initFlipbook(imagePaths) {
+    pageCount = imagePaths.length;
+    els.emptyState.hidden = pageCount > 0;
+    els.book.hidden = pageCount === 0;
 
-  function maxSpread() {
-    if (state.pages.length === 0) {
-      return 0;
-    }
-
-    return state.isMobile ? state.pages.length - 1 : Math.ceil(state.pages.length / 2) - 1;
-  }
-
-  function render() {
-    const pageCount = state.pages.length;
-    const index = Math.min(currentIndex(), Math.max(0, pageCount - 1));
-    const left = state.pages[index];
-    const right = state.isMobile ? left : state.pages[index + 1];
-
-    els.book.classList.toggle("is-empty", pageCount === 0);
-    setImage(els.leftImage, left);
-    setImage(els.rightImage, right);
-
-    els.pageCurrent.textContent = pageCount === 0 ? "0" : String(index + 1);
-    els.pageTotal.textContent = String(pageCount);
-
-    const atStart = state.spread <= 0;
-    const atEnd = state.spread >= maxSpread();
-    els.prevPage.disabled = atStart || pageCount === 0;
-    els.firstPage.disabled = atStart || pageCount === 0;
-    els.nextPage.disabled = atEnd || pageCount === 0;
-    els.lastPage.disabled = atEnd || pageCount === 0;
-  }
-
-  function setImage(img, page) {
-    if (!page) {
-      img.removeAttribute("src");
-      img.alt = "";
+    if (pageCount === 0) {
+      updateCounter(0);
       return;
     }
 
-    img.src = page.src;
-    img.alt = page.alt || page.name || "Flipbook page";
+    if (!window.St || !window.St.PageFlip) {
+      els.emptyState.hidden = false;
+      els.book.hidden = true;
+      els.emptyState.textContent = "The flipbook library could not be loaded.";
+      updateCounter(0);
+      return;
+    }
+
+    pageFlip = new window.St.PageFlip(els.book, {
+      width: 600,
+      height: 800,
+      size: "stretch",
+      minWidth: 280,
+      maxWidth: 620,
+      minHeight: 373,
+      maxHeight: 826,
+      drawShadow: true,
+      flippingTime: 850,
+      usePortrait: true,
+      startZIndex: 0,
+      autoSize: true,
+      maxShadowOpacity: 0.35,
+      showCover: true,
+      mobileScrollSupport: true,
+      swipeDistance: 28
+    });
+
+    pageFlip.on("init", (event) => updateCounter(event.data.page));
+    pageFlip.on("flip", (event) => updateCounter(event.data));
+    pageFlip.on("changeOrientation", () => updateCounter(pageFlip.getCurrentPageIndex()));
+    pageFlip.loadFromImages(imagePaths);
   }
 
-  function goTo(spread, animate) {
-    state.spread = Math.max(0, Math.min(spread, maxSpread()));
-    render();
+  function updateCounter(pageIndex) {
+    const current = pageCount === 0 ? 0 : Math.min(pageIndex + 1, pageCount);
+    els.pageCurrent.textContent = String(current);
+    els.pageTotal.textContent = String(pageCount);
 
-    if (animate) {
-      els.book.classList.remove("is-turning");
-      window.requestAnimationFrame(() => els.book.classList.add("is-turning"));
+    const atStart = pageCount === 0 || current <= 1;
+    const atEnd = pageCount === 0 || current >= pageCount;
+    els.prevPage.disabled = atStart;
+    els.firstPage.disabled = atStart;
+    els.nextPage.disabled = atEnd;
+    els.lastPage.disabled = atEnd;
+  }
+
+  function flipNext() {
+    if (pageFlip) {
+      pageFlip.flipNext("top");
     }
   }
 
-  function next() {
-    goTo(state.spread + 1, true);
+  function flipPrev() {
+    if (pageFlip) {
+      pageFlip.flipPrev("top");
+    }
   }
 
-  function previous() {
-    goTo(state.spread - 1, true);
-  }
-
-  els.nextPage.addEventListener("click", next);
-  els.prevPage.addEventListener("click", previous);
-  els.firstPage.addEventListener("click", () => goTo(0, true));
-  els.lastPage.addEventListener("click", () => goTo(maxSpread(), true));
+  els.nextPage.addEventListener("click", flipNext);
+  els.prevPage.addEventListener("click", flipPrev);
+  els.firstPage.addEventListener("click", () => pageFlip && pageFlip.flip(0, "top"));
+  els.lastPage.addEventListener("click", () => pageFlip && pageFlip.flip(pageCount - 1, "top"));
 
   els.fullscreen.addEventListener("click", () => {
     if (document.fullscreenElement) {
@@ -112,22 +113,17 @@
 
   window.addEventListener("keydown", (event) => {
     if (event.key === "ArrowRight") {
-      next();
+      flipNext();
     }
 
     if (event.key === "ArrowLeft") {
-      previous();
+      flipPrev();
     }
   });
 
   window.addEventListener("resize", () => {
-    const wasMobile = state.isMobile;
-    const oldPageIndex = wasMobile ? state.spread : state.spread * 2;
-    state.isMobile = window.matchMedia("(max-width: 760px)").matches;
-
-    if (wasMobile !== state.isMobile) {
-      state.spread = state.isMobile ? oldPageIndex : Math.floor(oldPageIndex / 2);
-      goTo(state.spread, false);
+    if (pageFlip) {
+      pageFlip.update();
     }
   });
 

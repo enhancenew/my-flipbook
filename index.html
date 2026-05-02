@@ -23,24 +23,18 @@
 
         <div class="book-wrap">
           <button class="nav-button" id="prevPage" type="button" aria-label="Previous page">
-            <span aria-hidden="true">‹</span>
+            <span aria-hidden="true">&lsaquo;</span>
           </button>
 
-          <div class="book" id="book" aria-live="polite">
-            <div class="book-spine" aria-hidden="true"></div>
-            <article class="page page-left">
-              <img id="leftImage" alt="">
-            </article>
-            <article class="page page-right">
-              <img id="rightImage" alt="">
-            </article>
+          <div class="book-frame">
+            <div class="book" id="book" aria-live="polite"></div>
             <div class="empty-state" id="emptyState">
               Add images to <code>pages/</code>, run <code>npm run build</code>, and publish.
             </div>
           </div>
 
           <button class="nav-button" id="nextPage" type="button" aria-label="Next page">
-            <span aria-hidden="true">›</span>
+            <span aria-hidden="true">&rsaquo;</span>
           </button>
         </div>
 
@@ -52,6 +46,7 @@
       </section>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
