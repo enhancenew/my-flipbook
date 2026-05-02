@@ -2,6 +2,8 @@
   const els = {
     book: document.getElementById("book"),
     bookViewport: document.getElementById("bookViewport"),
+    coverPage: document.getElementById("coverPage"),
+    coverImage: document.getElementById("coverImage"),
     emptyState: document.getElementById("emptyState"),
     pageCurrent: document.getElementById("pageCurrent"),
     pageTotal: document.getElementById("pageTotal"),
@@ -25,6 +27,8 @@
   let isFlipping = false;
   let flipGuardTimer = null;
   let audioContext = null;
+  let imagePaths = [];
+  let isCoverMode = true;
 
   async function loadPages() {
     try {
@@ -35,12 +39,12 @@
 
       const manifest = await response.json();
       const pages = Array.isArray(manifest.pages) ? manifest.pages : [];
-      const imagePaths = pages.map((page) => new URL(page.src, document.baseURI).href);
+      imagePaths = pages.map((page) => new URL(page.src, document.baseURI).href);
       await preloadImages(imagePaths);
-      initFlipbook(imagePaths);
+      initViewer(imagePaths);
       requestLaunchFullscreen();
     } catch (error) {
-      initFlipbook([]);
+      initViewer([]);
     }
   }
 
@@ -67,10 +71,11 @@
     );
   }
 
-  function initFlipbook(imagePaths) {
-    pageCount = imagePaths.length;
+  function initViewer(paths) {
+    pageCount = paths.length;
     els.emptyState.hidden = pageCount > 0;
-    els.book.hidden = pageCount === 0;
+    els.coverPage.hidden = pageCount === 0;
+    els.book.hidden = true;
     els.pageSlider.max = String(Math.max(pageCount, 1));
 
     if (pageCount === 0) {
@@ -78,13 +83,43 @@
       return;
     }
 
+    isCoverMode = true;
+    els.bookViewport.classList.add("is-cover-mode");
+    els.coverImage.src = paths[0];
+    els.coverImage.alt = "Book cover";
+    updateCounter(0);
+  }
+
+  function openBookAtFirstSpread() {
+    if (!isCoverMode || pageCount <= 1) {
+      return;
+    }
+
+    isCoverMode = false;
+    els.coverPage.hidden = true;
+    els.book.hidden = false;
+    els.bookViewport.classList.remove("is-cover-mode");
+
+    if (pageFlip) {
+      pageFlip.turnToPage(Math.min(1, pageCount - 1));
+      pageFlip.update();
+      updateCounter(pageFlip.getCurrentPageIndex());
+      return;
+    }
+
+    initFlipbook(imagePaths, Math.min(1, pageCount - 1));
+  }
+
+  function initFlipbook(paths, startPageIndex) {
     if (!window.St || !window.St.PageFlip) {
-      initFallback(imagePaths);
+      initFallback(paths, startPageIndex);
       return;
     }
 
     try {
+      els.book.innerHTML = "";
       pageFlip = new window.St.PageFlip(els.book, {
+        startPage: startPageIndex,
         width: 560,
         height: 760,
         size: "stretch",
@@ -114,16 +149,16 @@
         }
       });
       pageFlip.on("changeOrientation", () => updateCounter(pageFlip.getCurrentPageIndex()));
-      pageFlip.loadFromImages(imagePaths);
+      pageFlip.loadFromImages(paths);
     } catch (error) {
       pageFlip = null;
-      initFallback(imagePaths);
+      initFallback(paths, startPageIndex);
     }
   }
 
-  function initFallback(imagePaths) {
-    fallbackPages = imagePaths;
-    fallbackPageIndex = 0;
+  function initFallback(paths, startPageIndex) {
+    fallbackPages = paths;
+    fallbackPageIndex = startPageIndex;
     els.book.innerHTML = '<img class="fallback-page" alt="Flipbook page">';
     renderFallback();
   }
@@ -160,6 +195,12 @@
       return;
     }
 
+    if (isCoverMode) {
+      playPageTurnSound();
+      openBookAtFirstSpread();
+      return;
+    }
+
     if (pageFlip) {
       beginFlip();
       playPageTurnSound();
@@ -176,6 +217,16 @@
       return;
     }
 
+    if (isCoverMode) {
+      return;
+    }
+
+    if (pageFlip && pageFlip.getCurrentPageIndex() <= 1) {
+      playPageTurnSound();
+      showCover();
+      return;
+    }
+
     if (pageFlip) {
       beginFlip();
       playPageTurnSound();
@@ -185,6 +236,15 @@
       fallbackPageIndex -= 1;
       renderFallback();
     }
+  }
+
+  function showCover() {
+    isFlipping = false;
+    isCoverMode = true;
+    els.book.hidden = true;
+    els.coverPage.hidden = false;
+    els.bookViewport.classList.add("is-cover-mode");
+    updateCounter(0);
   }
 
   function setZoom(nextZoom) {
@@ -275,10 +335,13 @@
       return;
     }
 
-    if (pageFlip) {
-      beginFlip();
+    if (isCoverMode) {
+      return;
+    }
+
+    if (!isCoverMode && pageFlip) {
       playPageTurnSound();
-      pageFlip.flip(0, "top");
+      showCover();
     } else {
       playPageTurnSound();
       fallbackPageIndex = 0;
@@ -300,6 +363,12 @@
       renderFallback();
     }
   });
+  els.coverPage.addEventListener("click", () => {
+    if (!isFlipping) {
+      playPageTurnSound();
+      openBookAtFirstSpread();
+    }
+  });
   els.zoomOut.addEventListener("click", () => setZoom(zoom - 0.1));
   els.zoomIn.addEventListener("click", () => setZoom(zoom + 0.1));
 
@@ -309,13 +378,33 @@
       return;
     }
 
+    const targetPageIndex = Number(els.pageSlider.value) - 1;
+
+    if (targetPageIndex === 0) {
+      playPageTurnSound();
+      showCover();
+      return;
+    }
+
+    if (isCoverMode) {
+      playPageTurnSound();
+      openBookAtFirstSpread();
+      window.setTimeout(() => {
+        if (pageFlip) {
+          pageFlip.turnToPage(targetPageIndex);
+          updateCounter(pageFlip.getCurrentPageIndex());
+        }
+      }, 0);
+      return;
+    }
+
     if (pageFlip) {
       playPageTurnSound();
-      pageFlip.turnToPage(Number(els.pageSlider.value) - 1);
+      pageFlip.turnToPage(targetPageIndex);
       updateCounter(pageFlip.getCurrentPageIndex());
     } else {
       playPageTurnSound();
-      fallbackPageIndex = Number(els.pageSlider.value) - 1;
+      fallbackPageIndex = targetPageIndex;
       renderFallback();
     }
   });
