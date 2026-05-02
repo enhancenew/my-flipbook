@@ -165,7 +165,7 @@
 
   function updateCounter(pageIndex) {
     const current = pageCount === 0 ? 0 : Math.min(pageIndex + 1, pageCount);
-    els.pageCurrent.textContent = String(current);
+    els.pageCurrent.textContent = getDisplayPage(current);
     els.pageTotal.textContent = String(pageCount);
     els.pageSlider.value = String(Math.max(current, 1));
 
@@ -177,6 +177,15 @@
     [els.nextPage, els.nextDock, els.lastPage].forEach((button) => {
       button.disabled = atEnd;
     });
+  }
+
+  function getDisplayPage(current) {
+    if (pageCount === 0 || current <= 1 || isCoverMode) {
+      return String(current);
+    }
+
+    const nextPage = Math.min(current + 1, pageCount);
+    return nextPage > current ? `${current}-${nextPage}` : String(current);
   }
 
   function flipNext() {

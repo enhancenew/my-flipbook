@@ -26,9 +26,7 @@ body {
   margin: 0;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--ink);
-  background:
-    radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.10), transparent 34rem),
-    linear-gradient(180deg, #2f333b 0%, #17191e 48%, #0f1115 100%);
+  background: #303030;
 }
 
 button {
@@ -49,31 +47,17 @@ svg {
   width: 100vw;
   height: 100vh;
   min-height: 100vh;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  position: relative;
+  display: block;
   overflow: hidden;
 }
 
 .viewer-bar {
-  position: relative;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  height: 64px;
-  padding: 0 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
-  background: linear-gradient(180deg, rgba(17, 19, 23, 0.92), rgba(17, 19, 23, 0.74));
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(8px);
+  display: contents;
 }
 
 .brand-block {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  gap: 12px;
+  display: none;
 }
 
 .brand-mark {
@@ -109,9 +93,13 @@ h1 {
 }
 
 .toolbar-actions {
+  position: fixed;
+  right: 26px;
+  bottom: 24px;
+  z-index: 8;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 18px;
 }
 
 .icon-button,
@@ -119,54 +107,46 @@ h1 {
 .side-button {
   display: inline-grid;
   place-items: center;
-  border: 1px solid var(--line);
   color: var(--ink);
-  background: var(--button);
+  border: 0;
+  background: transparent;
   cursor: pointer;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
   transition: background 160ms ease, border-color 160ms ease, opacity 160ms ease;
 }
 
 .icon-button {
-  width: 38px;
-  height: 38px;
-  border-radius: 6px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 4px;
 }
 
 .icon-button:hover:not(:disabled),
 .dock-button:hover:not(:disabled),
 .side-button:hover:not(:disabled) {
-  border-color: rgba(214, 168, 79, 0.68);
-  background: var(--button-hover);
+  background: rgba(255, 255, 255, 0.10);
 }
 
 .reader-stage {
-  position: relative;
+  position: absolute;
+  inset: 0;
   display: grid;
   place-items: center;
   min-height: 0;
-  padding: 28px 82px 22px;
+  padding: 16px 96px 82px;
 }
 
 .reader-stage::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size: 42px 42px;
-  mask-image: radial-gradient(circle at center, black, transparent 78%);
-  pointer-events: none;
+  content: none;
 }
 
 .book-viewport {
   position: relative;
   display: grid;
   place-items: center;
-  width: min(100%, 1180px);
-  height: min(100%, calc(100vh - 170px));
-  min-height: 420px;
+  width: min(100%, 980px);
+  height: min(100%, calc(100vh - 88px));
+  min-height: 0;
   transform: scale(var(--book-scale));
   transition: transform 180ms ease;
   will-change: transform;
@@ -174,9 +154,9 @@ h1 {
 
 .book-shadow {
   position: absolute;
-  width: min(86%, 980px);
-  height: 56px;
-  bottom: 1%;
+  width: min(82%, 820px);
+  height: 34px;
+  bottom: 0;
   border-radius: 50%;
   background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.68), transparent 72%);
   filter: blur(8px);
@@ -189,7 +169,7 @@ h1 {
   place-items: center;
   width: 100%;
   height: 100%;
-  max-height: 760px;
+  max-height: none;
   border-radius: 4px;
 }
 
@@ -213,7 +193,10 @@ h1 {
 
 .book canvas {
   border-radius: 2px;
-  box-shadow: 0 22px 32px rgba(0, 0, 0, 0.38);
+  box-shadow:
+    11px 0 9px rgba(255, 255, 255, 0.46),
+    15px 0 2px rgba(0, 0, 0, 0.28),
+    0 10px 24px rgba(0, 0, 0, 0.32);
   will-change: transform;
 }
 
@@ -258,69 +241,107 @@ h1 {
   position: absolute;
   z-index: 3;
   top: 50%;
-  width: 54px;
-  height: 76px;
+  width: 74px;
+  height: 96px;
   transform: translateY(-50%);
-  border-radius: 7px;
+  border-radius: 6px;
+  color: #fff;
 }
 
 .side-button-left {
-  left: 18px;
+  left: 0;
 }
 
 .side-button-right {
-  right: 18px;
+  right: 0;
 }
 
 .side-button svg {
-  width: 30px;
-  height: 30px;
+  width: 58px;
+  height: 58px;
+  stroke-width: 1.9;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.45));
 }
 
 .control-dock {
-  position: relative;
-  z-index: 4;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 7;
   display: grid;
-  grid-template-columns: auto auto minmax(180px, 480px) auto auto;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 72px;
-  padding: 12px 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.10);
-  background: linear-gradient(180deg, rgba(17, 19, 23, 0.42), rgba(8, 10, 13, 0.88));
-  backdrop-filter: blur(8px);
+  min-height: 58px;
+  padding: 0 146px 18px 52px;
+  background: transparent;
+  pointer-events: none;
 }
 
 .dock-button {
-  width: 42px;
-  height: 42px;
-  border-radius: 6px;
+  display: none;
 }
 
 .page-meter {
   display: grid;
-  grid-template-columns: auto minmax(120px, 360px);
+  grid-template-columns: 86px minmax(0, 1fr);
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   min-width: 0;
-  padding: 8px 14px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: rgba(13, 15, 19, 0.74);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
 }
 
 .counter {
-  min-width: 70px;
+  min-width: 86px;
   color: #fff;
   font-variant-numeric: tabular-nums;
-  font-weight: 800;
-  text-align: center;
+  font-size: 1.18rem;
+  font-weight: 500;
+  text-align: left;
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.35);
 }
 
 input[type="range"] {
+  appearance: none;
+  -webkit-appearance: none;
   width: 100%;
-  accent-color: var(--gold);
+  height: 24px;
+  accent-color: #fff;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(214, 214, 214, 0.64);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  width: 24px;
+  height: 24px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  appearance: none;
+}
+
+input[type="range"]::-moz-range-track {
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(214, 214, 214, 0.64);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
 button:disabled {
@@ -330,8 +351,7 @@ button:disabled {
 
 @media (max-width: 760px) {
   .viewer-bar {
-    height: 58px;
-    padding: 0 12px;
+    display: contents;
   }
 
   .brand-mark {
@@ -345,11 +365,11 @@ button:disabled {
   }
 
   .reader-stage {
-    padding: 18px 54px 16px;
+    padding: 12px 48px 76px;
   }
 
   .book-viewport {
-    height: min(100%, calc(100vh - 156px));
+    height: min(100%, calc(100vh - 88px));
     min-height: 360px;
   }
 
@@ -358,38 +378,42 @@ button:disabled {
   }
 
   .side-button {
-    width: 42px;
-    height: 62px;
+    width: 46px;
+    height: 74px;
   }
 
   .side-button-left {
-    left: 8px;
+    left: 0;
   }
 
   .side-button-right {
-    right: 8px;
+    right: 0;
   }
 
   .control-dock {
-    grid-template-columns: auto auto minmax(0, 1fr) auto auto;
-    gap: 6px;
-    padding: 10px 8px;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0 92px 16px 18px;
   }
 
   .dock-button,
   .icon-button {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
   }
 
   .page-meter {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    padding: 6px 9px;
+    grid-template-columns: 54px minmax(0, 1fr);
+    gap: 8px;
   }
 
   .counter {
     min-width: 0;
-    font-size: 0.84rem;
+    font-size: 0.92rem;
+  }
+
+  .toolbar-actions {
+    right: 14px;
+    bottom: 18px;
+    gap: 10px;
   }
 }
