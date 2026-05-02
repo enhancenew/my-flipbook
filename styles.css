@@ -26,7 +26,9 @@ body {
   margin: 0;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--ink);
-  background: #303030;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(62, 68, 78, 0.72), transparent 34rem),
+    linear-gradient(180deg, #15191f 0%, #0b0e13 62%, #05070a 100%);
 }
 
 button {
@@ -53,28 +55,43 @@ svg {
 }
 
 .viewer-bar {
-  display: contents;
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 18px;
+  background: linear-gradient(180deg, rgba(10, 13, 18, 0.94), rgba(10, 13, 18, 0.62));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .brand-block {
-  display: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
 }
 
 .brand-mark {
   width: 32px;
   height: 38px;
   flex: 0 0 auto;
-  border: 2px solid rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.88);
   border-radius: 4px;
   background:
     linear-gradient(90deg, transparent 49%, rgba(0, 0, 0, 0.22) 50%, transparent 51%),
     linear-gradient(135deg, #f7f0d5, #c89534);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.42);
 }
 
 .eyebrow {
-  margin: 0 0 2px;
-  color: var(--gold);
+  display: inline-block;
+  margin: 0 0 3px;
+  padding: 1px 3px;
+  color: #fff;
+  background: #173f8f;
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -86,20 +103,21 @@ h1 {
   margin: 0;
   overflow: hidden;
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.15;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.48);
 }
 
 .toolbar-actions {
   position: fixed;
-  right: 26px;
-  bottom: 24px;
-  z-index: 8;
+  right: 18px;
+  top: 14px;
+  z-index: 10;
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 8px;
 }
 
 .icon-button,
@@ -115,10 +133,12 @@ h1 {
 }
 
 .icon-button {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   padding: 0;
-  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  background: rgba(13, 16, 22, 0.72);
 }
 
 .icon-button:hover:not(:disabled),
@@ -133,19 +153,26 @@ h1 {
   display: grid;
   place-items: center;
   min-height: 0;
-  padding: 16px 96px 82px;
+  padding: 78px 96px 88px;
 }
 
 .reader-stage::before {
-  content: none;
+  content: "";
+  position: absolute;
+  inset: 64px 0 58px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 42px 42px;
+  pointer-events: none;
 }
 
 .book-viewport {
   position: relative;
   display: grid;
   place-items: center;
-  width: min(100%, 980px);
-  height: min(100%, calc(100vh - 88px));
+  width: min(100%, 1180px);
+  height: min(100%, calc(100vh - 160px));
   min-height: 0;
   transform: scale(var(--book-scale));
   transition: transform 180ms ease;
@@ -154,13 +181,13 @@ h1 {
 
 .book-shadow {
   position: absolute;
-  width: min(82%, 820px);
-  height: 34px;
-  bottom: 0;
+  width: min(84%, 960px);
+  height: 86px;
+  bottom: -28px;
   border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.68), transparent 72%);
-  filter: blur(8px);
-  opacity: 0.82;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.86), transparent 72%);
+  filter: blur(18px);
+  opacity: 0.88;
 }
 
 .book-frame {
@@ -188,15 +215,16 @@ h1 {
 }
 
 .book-viewport.is-cover-mode .book-shadow {
-  width: min(38%, 500px);
+  width: min(34%, 430px);
+  height: 70px;
 }
 
 .book canvas {
   border-radius: 2px;
   box-shadow:
-    11px 0 9px rgba(255, 255, 255, 0.46),
-    15px 0 2px rgba(0, 0, 0, 0.28),
-    0 10px 24px rgba(0, 0, 0, 0.32);
+    10px 0 8px rgba(255, 255, 255, 0.40),
+    16px 0 2px rgba(0, 0, 0, 0.30),
+    0 28px 70px rgba(0, 0, 0, 0.46);
   will-change: transform;
 }
 
@@ -241,66 +269,75 @@ h1 {
   position: absolute;
   z-index: 3;
   top: 50%;
-  width: 74px;
-  height: 96px;
+  width: 54px;
+  height: 76px;
   transform: translateY(-50%);
   border-radius: 6px;
   color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(12, 15, 21, 0.56);
+  box-shadow: 0 22px 46px rgba(0, 0, 0, 0.36);
 }
 
 .side-button-left {
-  left: 0;
+  left: 18px;
 }
 
 .side-button-right {
-  right: 0;
+  right: 18px;
 }
 
 .side-button svg {
-  width: 58px;
-  height: 58px;
+  width: 34px;
+  height: 34px;
   stroke-width: 1.9;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.45));
 }
 
 .control-dock {
   position: fixed;
-  left: 0;
-  right: 0;
+  left: 50%;
   bottom: 0;
   z-index: 7;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: auto auto minmax(0, 480px) auto auto;
   align-items: center;
+  gap: 10px;
+  width: min(100% - 32px, 690px);
   min-height: 58px;
-  padding: 0 146px 18px 52px;
-  background: transparent;
-  pointer-events: none;
+  padding: 10px 0 12px;
+  transform: translateX(-50%);
 }
 
 .dock-button {
-  display: none;
+  display: inline-grid;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  background: rgba(12, 15, 21, 0.72);
 }
 
 .page-meter {
   display: grid;
-  grid-template-columns: 86px minmax(0, 1fr);
+  grid-template-columns: 72px minmax(0, 1fr);
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   min-width: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  pointer-events: auto;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  background: rgba(12, 15, 21, 0.78);
 }
 
 .counter {
-  min-width: 86px;
+  min-width: 72px;
   color: #fff;
   font-variant-numeric: tabular-nums;
-  font-size: 1.18rem;
-  font-weight: 500;
-  text-align: left;
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
   text-shadow: 0 2px 2px rgba(0, 0, 0, 0.35);
 }
 
@@ -314,33 +351,33 @@ input[type="range"] {
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-  height: 9px;
+  height: 5px;
   border-radius: 999px;
-  background: rgba(214, 214, 214, 0.64);
+  background: rgba(214, 214, 214, 0.38);
 }
 
 input[type="range"]::-webkit-slider-thumb {
-  width: 24px;
-  height: 24px;
-  margin-top: -7px;
+  width: 15px;
+  height: 15px;
+  margin-top: -5px;
   border-radius: 50%;
-  background: #fff;
+  background: #d6a84f;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
   appearance: none;
 }
 
 input[type="range"]::-moz-range-track {
-  height: 9px;
+  height: 5px;
   border-radius: 999px;
   background: rgba(214, 214, 214, 0.64);
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 24px;
-  height: 24px;
+  width: 15px;
+  height: 15px;
   border: 0;
   border-radius: 50%;
-  background: #fff;
+  background: #d6a84f;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
@@ -351,7 +388,8 @@ button:disabled {
 
 @media (max-width: 760px) {
   .viewer-bar {
-    display: contents;
+    height: 58px;
+    padding: 0 12px;
   }
 
   .brand-mark {
@@ -365,11 +403,11 @@ button:disabled {
   }
 
   .reader-stage {
-    padding: 12px 48px 76px;
+    padding: 66px 48px 76px;
   }
 
   .book-viewport {
-    height: min(100%, calc(100vh - 88px));
+    height: min(100%, calc(100vh - 142px));
     min-height: 360px;
   }
 
@@ -378,27 +416,33 @@ button:disabled {
   }
 
   .side-button {
-    width: 46px;
-    height: 74px;
+    width: 42px;
+    height: 62px;
   }
 
   .side-button-left {
-    left: 0;
+    left: 8px;
   }
 
   .side-button-right {
-    right: 0;
+    right: 8px;
   }
 
   .control-dock {
-    grid-template-columns: minmax(0, 1fr);
-    padding: 0 92px 16px 18px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    width: min(100% - 16px, 520px);
+    gap: 6px;
   }
 
   .dock-button,
   .icon-button {
     width: 32px;
     height: 32px;
+  }
+
+  .dock-button:first-child,
+  .dock-button:last-child {
+    display: none;
   }
 
   .page-meter {
@@ -412,8 +456,8 @@ button:disabled {
   }
 
   .toolbar-actions {
-    right: 14px;
-    bottom: 18px;
+    right: 12px;
+    top: 13px;
     gap: 10px;
   }
 }
