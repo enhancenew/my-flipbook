@@ -82,13 +82,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px; /* Reduced padding */
+            padding: 20px;
             box-sizing: border-box;
         }
 
         .flip-book {
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-            display: none; /* Hidden until loaded */
+            display: none;
             margin: auto;
         }
 
@@ -101,6 +101,12 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+        }
+
+        .page-blank {
+            background-color: #f0f0f0;
+            width: 100%;
+            height: 100%;
         }
 
         /* Bottom Bar */
@@ -130,17 +136,18 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.3);
             border: none;
             color: white;
-            padding: 20px 10px;
+            padding: 30px 15px;
             cursor: pointer;
             z-index: 150;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
 
         .nav-arrow:hover {
             background: rgba(0, 0, 0, 0.8);
+            padding: 30px 20px;
         }
 
         .nav-arrow.prev { left: 0; border-radius: 0 5px 5px 0; }
@@ -212,36 +219,36 @@
             const loader = document.getElementById('loader');
             let pageFlip = null;
 
-            function getBookSize() {
-                const container = document.getElementById('flipbook-container');
-                const w = container.clientWidth - 40;
-                const h = container.clientHeight - 40;
-                return { w, h };
-            }
-
             try {
-                const response = await fetch(`pages.json?t=${Date.now()}`);
+                const response = await fetch("pages.json?t=" + Date.now());
                 const data = await response.json();
-                const pages = data.pages;
+                let pages = data.pages;
+
+                if (pages.length % 2 !== 0) {
+                    pages.splice(pages.length - 1, 0, { isBlank: true, alt: 'Blank Page' });
+                }
+
                 totalPageInfo.textContent = pages.length;
                 
-                pages.forEach((page) => { console.log("Loading page:", page.src);
+                pages.forEach((page) => {
                     const pageDiv = document.createElement('div');
                     pageDiv.className = 'page';
-                    pageDiv.innerHTML = `<img src="${page.src}" alt="${page.alt}" loading="lazy">`;
+                    if (page.isBlank) {
+                        pageDiv.innerHTML = '<div class="page-blank"></div>';
+                    } else {
+                        pageDiv.innerHTML = "<img src=\"" + page.src + "\" alt=\"" + page.alt + "\" loading=\"lazy\">";
+                    }
                     flipBookElement.appendChild(pageDiv);
                 });
-
-                const size = getBookSize();
 
                 pageFlip = new St.PageFlip(flipBookElement, {
                     width: 550,
                     height: 733,
                     size: "stretch",
                     minWidth: 300,
-                    maxWidth: 1200,
+                    maxWidth: 1000,
                     minHeight: 400,
-                    maxHeight: 1600,
+                    maxHeight: 1350,
                     maxShadowOpacity: 0.5,
                     showCover: true,
                     mobileScrollSupport: false,
@@ -282,6 +289,3 @@
     </script>
 </body>
 </html>
-
-
-
