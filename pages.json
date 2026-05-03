@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-05-03T18:02:28.881Z",
+  "generatedAt": "2026-05-03T18:06:39.830Z",
   "pages": [
     {
-      "name": "10.jpeg",
-      "src": "pages/10.jpeg",
-      "alt": "10"
+      "name": "frontcoverpage.jpeg",
+      "src": "pages/frontcoverpage.jpeg",
+      "alt": "frontcoverpage"
     },
     {
       "name": "1.jpeg",
@@ -51,11 +51,10 @@
       "src": "pages/9.jpeg",
       "alt": "9"
     },
-
     {
-      "name": "11.jpeg",
-      "src": "pages/11.jpeg",
-      "alt": "11"
+      "name": "backcoverpage.jpeg",
+      "src": "pages/backcoverpage.jpeg",
+      "alt": "backcoverpage"
     }
   ]
 }
