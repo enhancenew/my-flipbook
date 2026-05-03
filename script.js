@@ -106,15 +106,16 @@
 
     try {
       els.book.innerHTML = "";
+      // Updated width/height to match exactly 3:4 aspect ratio (1200x1600)
       pageFlip = new window.St.PageFlip(els.book, {
         startPage: startPageIndex,
-        width: 560,
-        height: 760,
+        width: 600,
+        height: 800,
         size: "stretch",
-        minWidth: 280,
-        maxWidth: 620,
-        minHeight: 380,
-        maxHeight: 840,
+        minWidth: 300,
+        maxWidth: 1200,
+        minHeight: 400,
+        maxHeight: 1600,
         drawShadow: true,
         flippingTime: 700,
         usePortrait: false,
