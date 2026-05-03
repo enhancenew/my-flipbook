@@ -220,12 +220,12 @@
             }
 
             try {
-                const response = await fetch('pages.json');
+                const response = await fetch(`pages.json?t=${Date.now()}`);
                 const data = await response.json();
                 const pages = data.pages;
                 totalPageInfo.textContent = pages.length;
                 
-                pages.forEach((page) => {
+                pages.forEach((page) => { console.log("Loading page:", page.src);
                     const pageDiv = document.createElement('div');
                     pageDiv.className = 'page';
                     pageDiv.innerHTML = `<img src="${page.src}" alt="${page.alt}" loading="lazy">`;
@@ -282,4 +282,6 @@
     </script>
 </body>
 </html>
+
+
 
