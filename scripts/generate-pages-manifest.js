@@ -11,7 +11,7 @@ function generateManifest() {
     }
 
     const files = fs.readdirSync(pagesDir)
-        .filter(file => /\.(jpg|jpeg|png|webp|svg)$/i.test(file))
+        .filter(file => /\.(jpg|jpeg|png|webp|svg|gif|bmp|tiff)$/i.test(file))
         .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
 
     const pages = files.map(file => ({
@@ -30,3 +30,4 @@ function generateManifest() {
 }
 
 generateManifest();
+

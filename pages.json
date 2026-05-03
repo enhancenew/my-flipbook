@@ -1,45 +1,40 @@
 {
-  "generatedAt": "2026-05-03T17:43:58.007Z",
+  "generatedAt": "2026-05-03T17:51:33.396Z",
   "pages": [
     {
-      "name": "01-cover-page.svg",
-      "src": "pages/01-cover-page.svg",
-      "alt": "01 cover page"
+      "name": "1.jpeg",
+      "src": "pages/1.jpeg",
+      "alt": "1"
     },
     {
-      "name": "02-editorial.svg",
-      "src": "pages/02-editorial.svg",
-      "alt": "02 editorial"
+      "name": "2.jpeg",
+      "src": "pages/2.jpeg",
+      "alt": "2"
     },
     {
-      "name": "03-awardee-spotlight.svg",
-      "src": "pages/03-awardee-spotlight.svg",
-      "alt": "03 awardee spotlight"
+      "name": "3.jpeg",
+      "src": "pages/3.jpeg",
+      "alt": "3"
     },
     {
-      "name": "04-gallery.svg",
-      "src": "pages/04-gallery.svg",
-      "alt": "04 gallery"
+      "name": "4.jpeg",
+      "src": "pages/4.jpeg",
+      "alt": "4"
     },
     {
-      "name": "05-community.svg",
-      "src": "pages/05-community.svg",
-      "alt": "05 community"
+      "name": "5.jpeg",
+      "src": "pages/5.jpeg",
+      "alt": "5"
     },
     {
-      "name": "06-innovation.svg",
-      "src": "pages/06-innovation.svg",
-      "alt": "06 innovation"
+      "name": "6.jpeg",
+      "src": "pages/6.jpeg",
+      "alt": "6"
     },
     {
-      "name": "07-partners.svg",
-      "src": "pages/07-partners.svg",
-      "alt": "07 partners"
-    },
-    {
-      "name": "08-contact-us.svg",
-      "src": "pages/08-contact-us.svg",
-      "alt": "08 contact us"
+      "name": "7.jpeg",
+      "src": "pages/7.jpeg",
+      "alt": "7"
     }
   ]
 }
