@@ -49,6 +49,11 @@
             color: var(--accent-saffron);
         }
 
+        .toolbar .controls {
+            display: flex;
+            gap: 5px;
+        }
+
         .btn-icon {
             background: none;
             border: none;
@@ -77,12 +82,15 @@
             justify-content: center;
             padding: 10px;
             box-sizing: border-box;
+            overflow: auto; /* Allow scrolling when zoomed */
         }
 
         .flip-book {
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
             display: none;
             margin: auto;
+            transform-origin: center center;
+            transition: transform 0.2s ease-out;
         }
 
         .page {
@@ -125,29 +133,6 @@
             font-variant-numeric: tabular-nums;
         }
 
-        .nav-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.2);
-            border: none;
-            color: white;
-            padding: 40px 10px;
-            cursor: pointer;
-            z-index: 1500;
-            transition: all 0.3s;
-            opacity: 0.5;
-        }
-
-        .nav-arrow:hover {
-            background: rgba(0, 0, 0, 0.6);
-            opacity: 1;
-            padding: 40px 15px;
-        }
-
-        .nav-arrow.prev { left: 0; border-radius: 0 8px 8px 0; }
-        .nav-arrow.next { right: 0; border-radius: 8px 0 0 8px; }
-
         #loader {
             position: absolute;
             top: 50%;
@@ -173,7 +158,6 @@
         }
 
         @media (max-width: 768px) {
-            .nav-arrow { display: none; }
             #flipbook-container { padding: 5px; }
         }
     </style>
@@ -183,26 +167,27 @@
     <div class="toolbar">
         <div class="title">HKSSL <span style="color: white; font-weight: normal; font-size: 0.7rem;">SPECIAL EDITION</span></div>
         <div class="controls">
+            <button class="btn-icon" id="btn-zoom-out" title="Zoom Out"><i data-lucide="minus"></i></button>
+            <button class="btn-icon" id="btn-zoom-in" title="Zoom In"><i data-lucide="plus"></i></button>
             <button class="btn-icon" id="btn-fullscreen" title="Toggle Fullscreen"><i data-lucide="maximize"></i></button>
         </div>
     </div>
 
-    <button class="nav-arrow prev" id="btn-prev"><i data-lucide="chevron-left"></i></button>
-    <button class="nav-arrow next" id="btn-next"><i data-lucide="chevron-right"></i></button>
-
     <div id="flipbook-container">
         <div id="loader">
             <div class="spinner"></div>
-            <p style="font-size: 0.8rem;">Optimizing View...</p>
+            <p style="font-size: 0.8rem;">Ready...</p>
         </div>
         <div id="flipbook" class="flip-book"></div>
     </div>
 
     <div class="bottom-bar">
         <button class="btn-icon" id="btn-first" title="First Page"><i data-lucide="chevrons-left"></i></button>
+        <button class="btn-icon" id="btn-prev" title="Previous Page"><i data-lucide="chevron-left"></i></button>
         <div class="page-info">
             <span id="current-page">0</span> / <span id="total-pages">0</span>
         </div>
+        <button class="btn-icon" id="btn-next" title="Next Page"><i data-lucide="chevron-right"></i></button>
         <button class="btn-icon" id="btn-last" title="Last Page"><i data-lucide="chevrons-right"></i></button>
     </div>
 
@@ -215,11 +200,10 @@
             const totalPageInfo = document.getElementById('total-pages');
             const loader = document.getElementById('loader');
             let pageFlip = null;
+            let currentZoom = 1.0;
 
-            // PRELOADER LOGIC
             const preloadedImages = new Set();
             function preloadImages(pages, currentIndex) {
-                // Preload current, next 2, and previous 1 for smooth transition
                 const indicesToLoad = [currentIndex, currentIndex + 1, currentIndex + 2, currentIndex - 1];
                 indicesToLoad.forEach(idx => {
                     if (idx >= 0 && idx < pages.length && !pages[idx].isBlank && !preloadedImages.has(pages[idx].src)) {
@@ -240,8 +224,6 @@
                 }
 
                 totalPageInfo.textContent = pages.length;
-                
-                // Initial preload of first few pages
                 preloadImages(pages, 0);
 
                 pages.forEach((page) => {
@@ -255,7 +237,6 @@
                     flipBookElement.appendChild(pageDiv);
                 });
 
-                // Determine orientation and size constraints
                 const isMobile = window.innerWidth <= 768;
                 
                 pageFlip = new St.PageFlip(flipBookElement, {
@@ -263,14 +244,14 @@
                     height: 733,
                     size: "stretch",
                     minWidth: 300,
-                    maxWidth: isMobile ? 800 : 1200, // Reduced max width to fit better
+                    maxWidth: isMobile ? 800 : 1200,
                     minHeight: 400,
                     maxHeight: isMobile ? 1000 : 1400,
                     maxShadowOpacity: 0.3,
                     showCover: true,
                     mobileScrollSupport: false,
                     flippingTime: 800,
-                    usePortrait: isMobile, // Force single page on mobile
+                    usePortrait: isMobile,
                     startPage: 0
                 });
 
@@ -281,7 +262,6 @@
                 pageFlip.on('flip', (e) => {
                     const newIndex = e.data;
                     pageInfo.textContent = newIndex + 1;
-                    // Trigger preload for next pages as user flips
                     preloadImages(pages, newIndex);
                 });
 
@@ -290,6 +270,21 @@
                 document.getElementById('btn-first').addEventListener('click', () => pageFlip.flip(0));
                 document.getElementById('btn-last').addEventListener('click', () => pageFlip.flip(pages.length - 1));
                 
+                // Zoom Controls
+                document.getElementById('btn-zoom-in').addEventListener('click', () => {
+                    if (currentZoom < 2.5) {
+                        currentZoom += 0.2;
+                        flipBookElement.style.transform = "scale(" + currentZoom + ")";
+                    }
+                });
+
+                document.getElementById('btn-zoom-out').addEventListener('click', () => {
+                    if (currentZoom > 0.6) {
+                        currentZoom -= 0.2;
+                        flipBookElement.style.transform = "scale(" + currentZoom + ")";
+                    }
+                });
+
                 document.getElementById('btn-fullscreen').addEventListener('click', () => {
                     if (!document.fullscreenElement) {
                         document.documentElement.requestFullscreen();
@@ -299,8 +294,6 @@
                 });
 
                 window.addEventListener('resize', () => {
-                    const isNowMobile = window.innerWidth <= 768;
-                    // Dynamically update portrait mode if orientation changes
                     pageFlip.update(); 
                 });
 
