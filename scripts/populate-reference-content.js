@@ -17,7 +17,7 @@ function createSVG(pageNumber, title, subtitle, color) {
     <rect width="800" height="1100" fill="${color}" />
     <rect width="760" height="1060" x="20" y="20" fill="none" stroke="${theme.gold}" stroke-width="2" />
     
-    <text x="400" y="150" font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="${color === theme.navy ? 'white' : theme.navy}" text-anchor="middle">VANDE BHARAT</text>
+    <text x="400" y="150" font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="${color === theme.navy ? 'white' : theme.navy}" text-anchor="middle">HKSSL</text>
     <text x="400" y="210" font-family="Arial, sans-serif" font-size="24" fill="${color === theme.navy ? theme.saffron : theme.navy}" text-anchor="middle">SPECIAL EDITION 2022</text>
     
     <circle cx="400" cy="550" r="150" fill="white" opacity="0.1" />
@@ -48,3 +48,4 @@ pages.forEach((page, i) => {
 });
 
 console.log('Generated placeholder pages.');
+

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vande Bharat - Special Edition</title>
+    <title>HKSSL - Special Edition</title>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -82,12 +82,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px;
+            padding: 20px; /* Reduced padding */
+            box-sizing: border-box;
         }
 
         .flip-book {
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
             display: none; /* Hidden until loaded */
+            margin: auto;
         }
 
         .page {
@@ -133,7 +135,7 @@
             color: white;
             padding: 20px 10px;
             cursor: pointer;
-            z-index: 50;
+            z-index: 150;
             transition: background 0.2s;
         }
 
@@ -172,10 +174,8 @@
 <body>
 
     <div class="toolbar">
-        <div class="title">VANDE BHARAT <span style="color: white; font-weight: normal; font-size: 0.8rem;">SPECIAL EDITION</span></div>
+        <div class="title">HKSSL <span style="color: white; font-weight: normal; font-size: 0.8rem;">SPECIAL EDITION</span></div>
         <div class="controls">
-            <button class="btn-icon" id="btn-zoom-in" title="Zoom In"><i data-lucide="zoom-in"></i></button>
-            <button class="btn-icon" id="btn-zoom-out" title="Zoom Out"><i data-lucide="zoom-out"></i></button>
             <button class="btn-icon" id="btn-fullscreen" title="Toggle Fullscreen"><i data-lucide="maximize"></i></button>
         </div>
     </div>
@@ -211,39 +211,57 @@
             const totalPageInfo = document.getElementById('total-pages');
             const loader = document.getElementById('loader');
             let pageFlip = null;
+
+            function getBookSize() {
+                const container = document.getElementById('flipbook-container');
+                const w = container.clientWidth - 40;
+                const h = container.clientHeight - 40;
+                return { w, h };
+            }
+
             try {
                 const response = await fetch('pages.json');
                 const data = await response.json();
                 const pages = data.pages;
                 totalPageInfo.textContent = pages.length;
-                pages.forEach((page, index) => {
+                
+                pages.forEach((page) => {
                     const pageDiv = document.createElement('div');
                     pageDiv.className = 'page';
                     pageDiv.innerHTML = `<img src="${page.src}" alt="${page.alt}" loading="lazy">`;
                     flipBookElement.appendChild(pageDiv);
                 });
+
+                const size = getBookSize();
+
                 pageFlip = new St.PageFlip(flipBookElement, {
                     width: 550,
                     height: 733,
                     size: "stretch",
-                    minWidth: 315,
-                    maxWidth: 1000,
-                    minHeight: 420,
-                    maxHeight: 1350,
+                    minWidth: 300,
+                    maxWidth: 1200,
+                    minHeight: 400,
+                    maxHeight: 1600,
                     maxShadowOpacity: 0.5,
                     showCover: true,
-                    mobileScrollSupport: false
+                    mobileScrollSupport: false,
+                    usePortrait: true,
+                    startPage: 0
                 });
+
                 pageFlip.loadFromHTML(document.querySelectorAll('.page'));
                 loader.style.display = 'none';
                 flipBookElement.style.display = 'block';
+
                 pageFlip.on('flip', (e) => {
                     pageInfo.textContent = e.data + 1;
                 });
+
                 document.getElementById('btn-prev').addEventListener('click', () => pageFlip.flipPrev());
                 document.getElementById('btn-next').addEventListener('click', () => pageFlip.flipNext());
                 document.getElementById('btn-first').addEventListener('click', () => pageFlip.flip(0));
                 document.getElementById('btn-last').addEventListener('click', () => pageFlip.flip(pages.length - 1));
+                
                 document.getElementById('btn-fullscreen').addEventListener('click', () => {
                     if (!document.fullscreenElement) {
                         document.documentElement.requestFullscreen();
@@ -251,11 +269,17 @@
                         document.exitFullscreen();
                     }
                 });
+
+                window.addEventListener('resize', () => {
+                    pageFlip.update();
+                });
+
             } catch (error) {
                 console.error('Error initializing flipbook:', error);
-                loader.innerHTML = '<p style="color: #ff6b6b;">Failed to load magazine. Please ensure pages.json is present and valid.</p>';
+                loader.innerHTML = '<p style="color: #ff6b6b;">Failed to load magazine. Please check pages.json.</p>';
             }
         });
     </script>
 </body>
 </html>
+
