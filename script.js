@@ -120,7 +120,7 @@
         usePortrait: false,
         startZIndex: 2,
         autoSize: true,
-        maxShadowOpacity: 0.5,
+        maxShadowOpacity: 0.25,
         showCover: true,
         mobileScrollSupport: true,
         swipeDistance: 36,
@@ -210,10 +210,10 @@
   }
 
   function setZoom(nextZoom) {
-    zoom = Math.max(0.8, Math.min(nextZoom, 1.5));
+    zoom = Math.max(0.8, Math.min(nextZoom, 1.8));
     els.bookViewport.style.setProperty("--book-scale", String(zoom));
     els.zoomOut.disabled = zoom <= 0.8;
-    els.zoomIn.disabled = zoom >= 1.5;
+    els.zoomIn.disabled = zoom >= 1.8;
     if (pageFlip) setTimeout(() => pageFlip.update(), 100);
   }
 
@@ -244,7 +244,7 @@
     const source = audioContext.createBufferSource();
     source.buffer = buffer;
     const gain = audioContext.createGain();
-    gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gain.gain.setValueAtTime(0.05, audioContext.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
     source.connect(gain);
     gain.connect(audioContext.destination);
@@ -275,8 +275,8 @@
     if (!isFlipping) { playPageTurnSound(); openBookAtFirstSpread(); }
   };
 
-  els.zoomOut.onclick = () => setZoom(zoom - 0.1);
-  els.zoomIn.onclick = () => setZoom(zoom + 0.1);
+  els.zoomOut.onclick = () => setZoom(zoom - 0.2);
+  els.zoomIn.onclick = () => setZoom(zoom + 0.2);
 
   els.pageSlider.oninput = () => {
     if (isFlipping) return;

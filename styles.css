@@ -1,10 +1,10 @@
-:root {
-  --bg-cinema: #1a1a1a;
-  --bg-dock: rgba(18, 18, 18, 0.9);
-  --bg-overlay: rgba(0, 0, 0, 0.3);
-  --text-primary: #ffffff;
-  --text-muted: #888888;
-  --accent: #2196f3;
+﻿:root {
+  --bg-stage: #e8e8e8;
+  --bg-bar: #ffffff;
+  --text-primary: #333333;
+  --text-muted: #666666;
+  --accent: #173f8f;
+  --shadow-soft: rgba(0, 0, 0, 0.1);
   --book-scale: 1;
 }
 
@@ -16,7 +16,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-cinema);
+  background-color: var(--bg-stage);
   color: var(--text-primary);
   overflow: hidden;
   height: 100vh;
@@ -27,7 +27,7 @@ svg {
   height: 20px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 2;
+  stroke-width: 2.5;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -45,64 +45,57 @@ svg {
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  height: 50px;
   padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-  z-index: 10;
-  pointer-events: none;
-}
-
-.top-bar > * {
-  pointer-events: auto;
+  background: var(--bg-bar);
+  box-shadow: 0 1px 3px var(--shadow-soft);
+  z-index: 20;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .brand-logo {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   background: var(--accent);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 .brand-text h1 {
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .eyebrow {
-  display: block;
-  font-size: 10px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 2px;
+  display: none;
 }
 
 .top-actions {
   display: flex;
-  gap: 8px;
+  gap: 5px;
 }
 
 .icon-btn {
   background: transparent;
   border: none;
-  color: var(--text-primary);
-  padding: 8px;
+  color: var(--text-muted);
+  padding: 6px;
   cursor: pointer;
   border-radius: 4px;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .icon-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #f0f0f0;
+  color: var(--text-primary);
 }
 
 /* Nav Overlays */
@@ -113,38 +106,42 @@ svg {
   justify-content: space-between;
   align-items: center;
   pointer-events: none;
-  z-index: 5;
+  z-index: 15;
+  padding: 0 30px;
 }
 
 .nav-arrow {
-  height: 100%;
-  width: 10%;
-  min-width: 60px;
-  max-width: 120px;
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.3);
+  width: 56px;
+  height: 56px;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   pointer-events: auto;
-  transition: background 0.3s, color 0.3s;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.2s, background 0.2s, opacity 0.2s;
+  opacity: 0.8;
 }
 
 .nav-arrow svg {
-  width: 48px;
-  height: 48px;
-  stroke-width: 1.5;
+  width: 28px;
+  height: 28px;
 }
 
 .nav-arrow:hover {
-  background: linear-gradient(to right, rgba(0,0,0,0.4), transparent);
-  color: var(--text-primary);
+  transform: scale(1.1);
+  background: #f8f8f8;
+  opacity: 1;
 }
 
-.nav-next:hover {
-  background: linear-gradient(to left, rgba(0,0,0,0.4), transparent);
+.nav-arrow:disabled {
+  opacity: 0.2;
+  cursor: default;
+  transform: none;
 }
 
 /* Viewport */
@@ -153,13 +150,13 @@ svg {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-bottom: 60px; /* Room for dock */
+  padding: 60px 0 70px;
 }
 
 .book-container {
   position: relative;
   width: min(90%, 1200px);
-  height: min(80%, 800px);
+  height: min(85%, 850px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -169,11 +166,11 @@ svg {
 
 .book-floor-shadow {
   position: absolute;
-  bottom: -40px;
-  width: 80%;
-  height: 20px;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 70%);
-  filter: blur(10px);
+  bottom: -50px;
+  width: 85%;
+  height: 30px;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, transparent 70%);
+  filter: blur(15px);
 }
 
 .book-wrapper {
@@ -185,17 +182,17 @@ svg {
 }
 
 .cover-gate {
-  width: 400px;
-  height: 560px;
+  width: 420px;
+  height: 580px;
   background: #fff;
   border: none;
   cursor: pointer;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-  transition: transform 0.3s;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .cover-gate:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px) scale(1.02);
 }
 
 .cover-gate img {
@@ -211,7 +208,6 @@ svg {
 
 .empty-msg {
   color: var(--text-muted);
-  text-align: center;
 }
 
 /* Bottom Dock */
@@ -220,20 +216,21 @@ svg {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 60px;
-  background: var(--bg-dock);
+  height: 54px;
+  background: var(--bg-bar);
   display: flex;
   align-items: center;
   padding: 0 20px;
-  gap: 20px;
-  z-index: 10;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 15px;
+  z-index: 20;
+  border-top: 1px solid #ddd;
+  box-shadow: 0 -1px 3px var(--shadow-soft);
 }
 
 .dock-left, .dock-right {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 
 .dock-center {
@@ -241,77 +238,76 @@ svg {
   display: flex;
   align-items: center;
   gap: 15px;
-  max-width: 600px;
+  max-width: 500px;
   margin: 0 auto;
 }
 
 .dock-btn {
   background: transparent;
   border: none;
-  color: var(--text-primary);
-  padding: 10px;
+  color: var(--text-muted);
+  padding: 8px;
   cursor: pointer;
   border-radius: 4px;
-  transition: background 0.2s, opacity 0.2s;
+  transition: all 0.2s;
 }
 
 .dock-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
+  background: #f0f0f0;
+  color: var(--text-primary);
 }
 
 .dock-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
+  opacity: 0.2;
 }
 
 .dock-divider {
   width: 1px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.1);
-  margin: 0 8px;
+  height: 20px;
+  background: #ddd;
+  margin: 0 5px;
 }
 
 .page-info {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   min-width: 60px;
   text-align: center;
+  color: var(--text-primary);
 }
 
 #pageSlider {
   flex: 1;
-  height: 4px;
+  height: 6px;
   -webkit-appearance: none;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
+  background: #eee;
+  border-radius: 3px;
   cursor: pointer;
 }
 
 #pageSlider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
   background: var(--accent);
   border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Mobile Adjustments */
 @media (max-width: 768px) {
-  .top-bar {
-    height: 50px;
-  }
-  .brand-text {
-    display: none;
+  .nav-overlay {
+    padding: 0 10px;
   }
   .nav-arrow {
-    width: 60px;
+    width: 44px;
+    height: 44px;
   }
-  .bottom-dock {
-    padding: 0 10px;
-    gap: 10px;
+  .nav-arrow svg {
+    width: 22px;
+    height: 22px;
   }
-  .dock-btn {
-    padding: 8px;
+  .dock-center {
+    max-width: none;
   }
   .dock-divider, #firstPage, #lastPage {
     display: none;
