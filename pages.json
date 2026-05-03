@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-02T21:30:12.870Z",
+  "generatedAt": "2026-05-03T16:50:23.399Z",
   "pages": [
     {
       "name": "01-cover.svg",
@@ -25,6 +25,11 @@
       "name": "05-cover.svg",
       "src": "pages/05-cover.svg",
       "alt": "05 cover"
+    },
+    {
+      "name": "Book cover.svg",
+      "src": "pages/Book%20cover.svg",
+      "alt": "Book cover"
     }
   ]
 }
