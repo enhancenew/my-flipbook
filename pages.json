@@ -1,35 +1,45 @@
 {
-  "generatedAt": "2026-05-03T17:02:06.220Z",
+  "generatedAt": "2026-05-03T17:29:45.846Z",
   "pages": [
     {
-      "name": "01-cover.svg",
-      "src": "pages/01-cover.svg",
-      "alt": "01 cover"
+      "name": "01-cover-page.svg",
+      "src": "pages/01-cover-page.svg",
+      "alt": "01 cover page"
     },
     {
-      "name": "02-gallery.svg",
-      "src": "pages/02-gallery.svg",
-      "alt": "02 gallery"
+      "name": "02-editorial.svg",
+      "src": "pages/02-editorial.svg",
+      "alt": "02 editorial"
     },
     {
-      "name": "03-story.svg",
-      "src": "pages/03-story.svg",
-      "alt": "03 story"
+      "name": "03-awardee-spotlight.svg",
+      "src": "pages/03-awardee-spotlight.svg",
+      "alt": "03 awardee spotlight"
     },
     {
-      "name": "04-end.svg",
-      "src": "pages/04-end.svg",
-      "alt": "04 end"
+      "name": "04-gallery.svg",
+      "src": "pages/04-gallery.svg",
+      "alt": "04 gallery"
     },
     {
-      "name": "05-cover.svg",
-      "src": "pages/05-cover.svg",
-      "alt": "05 cover"
+      "name": "05-community.svg",
+      "src": "pages/05-community.svg",
+      "alt": "05 community"
     },
     {
-      "name": "Book cover.svg",
-      "src": "pages/Book%20cover.svg",
-      "alt": "Book cover"
+      "name": "06-innovation.svg",
+      "src": "pages/06-innovation.svg",
+      "alt": "06 innovation"
+    },
+    {
+      "name": "07-partners.svg",
+      "src": "pages/07-partners.svg",
+      "alt": "07 partners"
+    },
+    {
+      "name": "08-contact-us.svg",
+      "src": "pages/08-contact-us.svg",
+      "alt": "08 contact us"
     }
   ]
 }

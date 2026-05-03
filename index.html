@@ -1,97 +1,261 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Flipbook Viewer</title>
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-    <main class="flip-viewer">
-      <!-- Top Overlay Bar -->
-      <header class="top-bar">
-        <div class="brand">
-          <span class="brand-logo"></span>
-          <div class="brand-text">
-            <span class="eyebrow">Digital Edition</span>
-            <h1>Vande Bharat - Special Edition</h1>
-          </div>
-        </div>
-        <div class="top-actions">
-          <button class="icon-btn" id="shareBtn" title="Share">
-            <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
-          </button>
-          <button class="icon-btn" id="downloadBtn" title="Download PDF">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          </button>
-        </div>
-      </header>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vande Bharat - Special Edition</title>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --surface-color: #2d2d2d;
+            --accent-saffron: #FF9933;
+            --accent-green: #138808;
+            --accent-blue: #000080;
+            --text-color: #ffffff;
+            --toolbar-height: 60px;
+        }
 
-      <!-- Navigation Overlays -->
-      <nav class="nav-overlay">
-        <button class="nav-arrow nav-prev" id="prevPage" aria-label="Previous Page">
-          <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
-        </button>
-        <button class="nav-arrow nav-next" id="nextPage" aria-label="Next Page">
-          <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-        </button>
-      </nav>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+        }
 
-      <section class="viewport-stage">
-        <div class="book-container" id="bookViewport">
-          <div class="book-floor-shadow"></div>
-          <div class="book-wrapper">
-            <button class="cover-gate" id="closedCover">
-              <img id="closedCoverImage" alt="Book Cover">
-            </button>
-            <div class="book-canvas" id="book"></div>
-            <div class="empty-msg" id="emptyState">
-              No pages found in <code>pages/</code>.
-            </div>
-          </div>
+        /* Toolbar */
+        .toolbar {
+            height: var(--toolbar-height);
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 100;
+            border-bottom: 2px solid var(--accent-blue);
+        }
+
+        .toolbar .title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            color: var(--accent-saffron);
+        }
+
+        .toolbar .controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Flipbook Container */
+        #flipbook-container {
+            position: absolute;
+            top: var(--toolbar-height);
+            bottom: var(--toolbar-height);
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .flip-book {
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            display: none; /* Hidden until loaded */
+        }
+
+        .page {
+            background-color: white;
+            overflow: hidden;
+        }
+
+        .page img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Bottom Bar */
+        .bottom-bar {
+            height: var(--toolbar-height);
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 100;
+            gap: 20px;
+        }
+
+        .page-info {
+            font-size: 0.9rem;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        /* Navigation Arrows */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            padding: 20px 10px;
+            cursor: pointer;
+            z-index: 50;
+            transition: background 0.2s;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .nav-arrow.prev { left: 0; border-radius: 0 5px 5px 0; }
+        .nav-arrow.next { right: 0; border-radius: 5px 0 0 5px; }
+
+        /* Loader */
+        #loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--accent-saffron);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <div class="title">VANDE BHARAT <span style="color: white; font-weight: normal; font-size: 0.8rem;">SPECIAL EDITION</span></div>
+        <div class="controls">
+            <button class="btn-icon" id="btn-zoom-in" title="Zoom In"><i data-lucide="zoom-in"></i></button>
+            <button class="btn-icon" id="btn-zoom-out" title="Zoom Out"><i data-lucide="zoom-out"></i></button>
+            <button class="btn-icon" id="btn-fullscreen" title="Toggle Fullscreen"><i data-lucide="maximize"></i></button>
         </div>
-      </section>
+    </div>
 
-      <!-- Bottom Control Bar -->
-      <footer class="bottom-dock">
-        <div class="dock-left">
-          <button class="dock-btn" id="firstPage" title="First Page">
-            <svg viewBox="0 0 24 24"><path d="m11 17-5-5 5-5M18 17l-5-5 5-5"/></svg>
-          </button>
-          <button class="dock-btn" id="prevDock" title="Previous">
-            <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
+    <button class="nav-arrow prev" id="btn-prev"><i data-lucide="chevron-left"></i></button>
+    <button class="nav-arrow next" id="btn-next"><i data-lucide="chevron-right"></i></button>
+
+    <div id="flipbook-container">
+        <div id="loader">
+            <div class="spinner"></div>
+            <p>Loading Magazine...</p>
         </div>
-
-        <div class="dock-center">
-          <div class="page-info">
-            <span id="pageCurrent">1</span> / <span id="pageTotal">1</span>
-          </div>
-          <input type="range" id="pageSlider" min="1" max="1" value="1">
+        <div id="flipbook" class="flip-book">
+            <!-- Pages will be injected here -->
         </div>
+    </div>
 
-        <div class="dock-right">
-          <button class="dock-btn" id="nextDock" title="Next">
-            <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
-          <button class="dock-btn" id="lastPage" title="Last Page">
-            <svg viewBox="0 0 24 24"><path d="m6 17 5-5-5-5M13 17l5-5-5-5"/></svg>
-          </button>
-          <div class="dock-divider"></div>
-          <button class="dock-btn" id="zoomOut" title="Zoom Out">
-            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-          </button>
-          <button class="dock-btn" id="zoomIn" title="Zoom In">
-            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-          </button>
-          <button class="dock-btn" id="fullscreen" title="Toggle Fullscreen">
-            <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
-          </button>
+    <div class="bottom-bar">
+        <button class="btn-icon" id="btn-first" title="First Page"><i data-lucide="chevrons-left"></i></button>
+        <div class="page-info">
+            Page <span id="current-page">0</span> of <span id="total-pages">0</span>
         </div>
-      </footer>
-    </main>
+        <button class="btn-icon" id="btn-last" title="Last Page"><i data-lucide="chevrons-right"></i></button>
+    </div>
 
-    <script src="vendor/page-flip.browser.min.js"></script>
-    <script src="script.js"></script>
-  </body>
+    <!-- Page Flip Library -->
+    <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            lucide.createIcons();
+            const flipBookElement = document.getElementById('flipbook');
+            const pageInfo = document.getElementById('current-page');
+            const totalPageInfo = document.getElementById('total-pages');
+            const loader = document.getElementById('loader');
+            let pageFlip = null;
+            try {
+                const response = await fetch('pages.json');
+                const data = await response.json();
+                const pages = data.pages;
+                totalPageInfo.textContent = pages.length;
+                pages.forEach((page, index) => {
+                    const pageDiv = document.createElement('div');
+                    pageDiv.className = 'page';
+                    pageDiv.innerHTML = `<img src="${page.src}" alt="${page.alt}" loading="lazy">`;
+                    flipBookElement.appendChild(pageDiv);
+                });
+                pageFlip = new St.PageFlip(flipBookElement, {
+                    width: 550,
+                    height: 733,
+                    size: "stretch",
+                    minWidth: 315,
+                    maxWidth: 1000,
+                    minHeight: 420,
+                    maxHeight: 1350,
+                    maxShadowOpacity: 0.5,
+                    showCover: true,
+                    mobileScrollSupport: false
+                });
+                pageFlip.loadFromHTML(document.querySelectorAll('.page'));
+                loader.style.display = 'none';
+                flipBookElement.style.display = 'block';
+                pageFlip.on('flip', (e) => {
+                    pageInfo.textContent = e.data + 1;
+                });
+                document.getElementById('btn-prev').addEventListener('click', () => pageFlip.flipPrev());
+                document.getElementById('btn-next').addEventListener('click', () => pageFlip.flipNext());
+                document.getElementById('btn-first').addEventListener('click', () => pageFlip.flip(0));
+                document.getElementById('btn-last').addEventListener('click', () => pageFlip.flip(pages.length - 1));
+                document.getElementById('btn-fullscreen').addEventListener('click', () => {
+                    if (!document.fullscreenElement) {
+                        document.documentElement.requestFullscreen();
+                    } else {
+                        document.exitFullscreen();
+                    }
+                });
+            } catch (error) {
+                console.error('Error initializing flipbook:', error);
+                loader.innerHTML = '<p style="color: #ff6b6b;">Failed to load magazine. Please ensure pages.json is present and valid.</p>';
+            }
+        });
+    </script>
+</body>
 </html>

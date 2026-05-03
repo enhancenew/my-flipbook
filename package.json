@@ -1,5 +1,8 @@
 {
+  "name": "vande-bharat-flipbook",
+  "version": "1.0.0",
   "scripts": {
-    "build": "node scripts/generate-pages-manifest.js"
+    "build": "node scripts/generate-pages-manifest.js",
+    "populate": "node scripts/populate-reference-content.js"
   }
 }

@@ -1,45 +1,32 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-const root = path.resolve(__dirname, "..");
-const pagesDir = path.join(root, "pages");
-const outputFile = path.join(root, "pages.json");
-const allowedExtensions = new Set([".avif", ".gif", ".jpeg", ".jpg", ".png", ".webp", ".svg"]);
+const pagesDir = path.join(__dirname, '../pages');
+const outputFile = path.join(__dirname, '../pages.json');
 
-function naturalCompare(a, b) {
-  return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
-}
+function generateManifest() {
+    if (!fs.existsSync(pagesDir)) {
+        console.error('Pages directory not found:', pagesDir);
+        return;
+    }
 
-function toTitle(filename) {
-  return path
-    .basename(filename, path.extname(filename))
-    .replace(/[-_]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+    const files = fs.readdirSync(pagesDir)
+        .filter(file => /\.(jpg|jpeg|png|webp|svg)$/i.test(file))
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
 
-function readPages() {
-  if (!fs.existsSync(pagesDir)) {
-    fs.mkdirSync(pagesDir);
-  }
-
-  return fs
-    .readdirSync(pagesDir, { withFileTypes: true })
-    .filter((entry) => entry.isFile())
-    .map((entry) => entry.name)
-    .filter((name) => allowedExtensions.has(path.extname(name).toLowerCase()))
-    .sort(naturalCompare)
-    .map((name) => ({
-      name,
-      src: `pages/${encodeURIComponent(name)}`,
-      alt: toTitle(name)
+    const pages = files.map(file => ({
+        name: file,
+        src: `pages/${file}`,
+        alt: path.parse(file).name.replace(/-/g, ' ')
     }));
+
+    const manifest = {
+        generatedAt: new Date().toISOString(),
+        pages: pages
+    };
+
+    fs.writeFileSync(outputFile, JSON.stringify(manifest, null, 2));
+    console.log(`Successfully generated manifest with ${pages.length} pages.`);
 }
 
-const manifest = {
-  generatedAt: new Date().toISOString(),
-  pages: readPages()
-};
-
-fs.writeFileSync(outputFile, `${JSON.stringify(manifest, null, 2)}\n`);
-console.log(`Wrote ${manifest.pages.length} page(s) to ${path.relative(root, outputFile)}`);
+generateManifest();
