@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T09:57:30.457Z",
+  "generatedAt": "2026-05-04T09:57:56.776Z",
   "pages": [
     {
       "name": "frontcoverpage.jpeg",
@@ -57,5 +57,5 @@
       "alt": "backcoverpage"
     }
   ],
-  "music": null
+  "music": "music/wedding-music.mp3"
 }
