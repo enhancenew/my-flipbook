@@ -231,8 +231,8 @@
                 };
                 document.getElementById('btn-mute').onclick = () => {
                     music.muted = !music.muted;
-                    const icon = document.querySelector('#btn-mute i');
-                    icon.setAttribute('data-lucide', music.muted ? 'volume-x' : 'volume-2');
+                    const btn = document.getElementById('btn-mute');
+                    btn.innerHTML = `<i data-lucide="${music.muted ? 'volume-x' : 'volume-2'}"></i>`;
                     lucide.createIcons();
                 };
                 window.onresize = () => {
