@@ -25,13 +25,13 @@
         }
 
         .basic-left-container {
-            flex: 1; background: #fff; 
+            flex: 1; background: #0a0a0a; 
             overflow: hidden; 
             display: flex; flex-direction: column;
         }
 
         .view-stage {
-            flex: 1; background: #0a0a0a; position: relative;
+            flex: 1; background: transparent; position: relative;
             display: flex; align-items: center; justify-content: center;
             overflow: hidden; padding: 10px;
         }
@@ -64,7 +64,10 @@
 
         .book-footer {
             flex-shrink: 0;
-            padding: 10px 15px; background: #fff; border-top: 1px solid var(--af-border);
+            padding: 10px 15px; 
+            background: rgba(18, 18, 18, 0.95); 
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.05);
             display: flex; align-items: center; justify-content: space-between; gap: 15px;
             position: relative; z-index: 20;
         }
@@ -77,6 +80,7 @@
                 flex-wrap: wrap; 
                 justify-content: center; 
                 gap: 10px; 
+                background: rgba(10, 10, 10, 0.98);
             }
             .footer-left, .footer-right { order: 2; }
             .footer-center { order: 1; width: 100%; justify-content: center; margin-bottom: 2px; }
@@ -92,15 +96,22 @@
             .footer-left, .footer-right { order: 0; }
             .view-stage { padding: 2px; }
         }
-        .btn-tool:hover { background: #f0f0f0; color: #333; border-color: #bbb; }
+        .btn-tool {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #ccc; cursor: pointer;
+            padding: 8px; border-radius: 4px; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            touch-action: manipulation;
+        }
+        .btn-tool:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.2); }
         .btn-tool.active { background: var(--af-light-blue); color: #fff; border-color: var(--af-light-blue); }
         .select-tool {
-            background: #fff; border: 1px solid #ddd; color: #666; cursor: pointer;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #ccc; cursor: pointer;
             padding: 7px 10px; border-radius: 4px; transition: all 0.2s;
             font-size: 13px; font-weight: 600; outline: none;
         }
-        .select-tool:focus { border-color: var(--af-light-blue); }
-        .page-counter { font-size: 14px; font-weight: 600; color: #555; min-width: 60px; text-align: center; font-variant-numeric: tabular-nums; }
+        .select-tool option { background: #1a1a1a; color: #fff; }
+        .select-tool:focus { border-color: var(--af-light-blue); color: #fff; }
+        .page-counter { font-size: 14px; font-weight: 600; color: #aaa; min-width: 60px; text-align: center; font-variant-numeric: tabular-nums; }
         
         .btn-fs-text { font-size: 13px; font-weight: 600; color: var(--af-light-blue); cursor: pointer; text-decoration: underline; }
 
