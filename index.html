@@ -13,19 +13,38 @@
             --text-main: #e0e0e0;
             --toolbar-h: 50px;
         }
+        body.light-theme {
+            --bg-color: #f5f5f5;
+            --bar-color: rgba(255, 255, 255, 0.98);
+            --accent-gold: #b8860b;
+            --text-main: #2c2c2c;
+        }
         body, html {
             margin: 0; padding: 0; height: 100%;
             overflow: hidden; background-color: var(--bg-color);
             font-family: 'Inter', -apple-system, sans-serif;
             color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
         }
+        /* Mobile vs Desktop specific styles */
+        body.is-mobile .header h1 { font-size: 12px; }
+        body.is-mobile .marquee-container { display: none; } /* Hide marquee on mobile to save space */
+        
+        .header-logo {
+            height: 30px;
+            margin-right: 15px;
+            transition: all 0.3s;
+        }
+
         .app-container { display: flex; flex-direction: column; height: 100vh; }
         .header {
             height: var(--toolbar-h); background: var(--bar-color);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 0 20px; border-bottom: 1px solid rgba(0,0,0,0.05);
             z-index: 100; backdrop-filter: blur(10px);
+            transition: background 0.3s;
         }
+        body:not(.light-theme) .header { border-bottom: 1px solid rgba(255,255,255,0.05); }
         .header h1 { font-size: 14px; letter-spacing: 2px; color: var(--accent-gold); margin: 0; }
         .controls { display: flex; align-items: center; gap: 10px; }
         .autoflip-select {
@@ -44,14 +63,15 @@
 
         .view-stage {
             flex: 1; display: flex; align-items: center; justify-content: center;
-            position: relative; overflow: hidden; padding: 40px; background: #0a0a0a;
+            position: relative; overflow: hidden; padding: 40px; background: var(--bg-color);
         }
         #flipbook {
             box-shadow: 0 0 100px rgba(0,0,0,0.9);
-            display: none; background-color: #0a0a0a; border-radius: 4px;
+            display: none; background-color: var(--bg-color); border-radius: 4px;
             transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
         }
-        .page { background: #0a0a0a; overflow: hidden; position: relative; }
+        .page { background: var(--bg-color); overflow: hidden; position: relative; }
+        .page-blank { background: var(--bg-color); width: 100%; height: 100%; }
         .page-content {
             position: relative; width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center; overflow: hidden;
@@ -106,10 +126,16 @@
     <div class="app-container">
         <header class="header">
             <div style="display: flex; align-items: center; gap: 20px; flex: 1; overflow: hidden;">
+                <div id="logo-container" class="header-logo" style="display: flex; align-items: center; gap: 10px; cursor: pointer;" title="Toggle Theme">
+                    <i id="device-logo" data-lucide="monitor" style="opacity: 0.5; width: 16px;"></i>
+                    <i id="theme-logo" data-lucide="moon"></i>
+                </div>
                 <h1>HKSSL &#128141; &#127881;</h1>
-                <marquee behavior="scroll" direction="left" scrollamount="5" style="color: var(--accent-gold); font-size: 12px; font-weight: 500;">
-                    Congratulations to HK & SSL on their Special Day! Wishing you both a lifetime of love and happiness! ✨ 💍 🥂 🎊 ❤️
-                </marquee>
+                <div class="marquee-container" style="flex: 1; overflow: hidden;">
+                    <marquee behavior="scroll" direction="left" scrollamount="5" style="color: var(--accent-gold); font-size: 12px; font-weight: 500;">
+                        Congratulations to HK & SSL on their Special Day! Wishing you both a lifetime of love and happiness! ✨ 💍 🥂 🎊 ❤️
+                    </marquee>
+                </div>
             </div>
             <button class="btn-tool" id="btn-fs-header" title="Fullscreen"><i data-lucide="maximize"></i></button>
         </header>
@@ -145,6 +171,39 @@
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
+            // Device Detection
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const deviceLogo = document.getElementById('device-logo');
+            if (isMobile) {
+                document.body.classList.add('is-mobile');
+                deviceLogo.setAttribute('data-lucide', 'smartphone');
+            } else {
+                deviceLogo.setAttribute('data-lucide', 'monitor');
+            }
+
+            // Theme Management
+            const themeLogo = document.getElementById('theme-logo');
+            const logoContainer = document.getElementById('logo-container');
+            const applyTheme = (isDark) => {
+                if (isDark) {
+                    document.body.classList.remove('light-theme');
+                    themeLogo.setAttribute('data-lucide', 'moon');
+                } else {
+                    document.body.classList.add('light-theme');
+                    themeLogo.setAttribute('data-lucide', 'sun');
+                }
+                if (window.lucide) lucide.createIcons();
+            };
+
+            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            applyTheme(darkModeMediaQuery.matches);
+            darkModeMediaQuery.addListener((e) => applyTheme(e.matches));
+
+            logoContainer.onclick = () => {
+                const currentlyLight = document.body.classList.contains('light-theme');
+                applyTheme(currentlyLight);
+            };
+
             lucide.createIcons();
             const bookEl = document.getElementById('flipbook');
             const currEl = document.getElementById('curr');
