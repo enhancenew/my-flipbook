@@ -112,6 +112,38 @@
         }
         .btn-tool:hover { color: #fff; background: rgba(255,255,255,0.1); }
         .page-counter { font-size: 12px; font-variant-numeric: tabular-nums; min-width: 60px; text-align: center; }
+        
+        /* Volume Control */
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+        .volume-slider {
+            width: 0;
+            opacity: 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            outline: none;
+        }
+        .volume-container:hover .volume-slider {
+            width: 80px;
+            opacity: 1;
+        }
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
         #loader { text-align: center; }
         .spinner {
             width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.1);
@@ -164,7 +196,10 @@
                 <button class="btn-tool" id="btn-last"><i data-lucide="chevrons-right"></i></button>
             </div>
             <div class="footer-side" style="justify-content: flex-end;">
-                <button class="btn-tool" id="btn-mute" title="Mute/Unmute"><i data-lucide="volume-2"></i></button>
+                <div class="volume-container">
+                    <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.1" value="1">
+                    <button class="btn-tool" id="btn-mute" title="Mute/Unmute"><i data-lucide="volume-2"></i></button>
+                </div>
             </div>
         </footer>
         <audio id="bg-music" loop></audio>
@@ -211,10 +246,26 @@
             const totalEl = document.getElementById('total');
             const music = document.getElementById('bg-music');
             const muteBtn = document.getElementById('btn-mute');
+            const volumeSlider = document.getElementById('volume-slider');
             const autoflipSelect = document.getElementById('select-autoflip');
             
             let isMuted = false;
+            let lastVolume = 1;
             let autoFlipTimer = null;
+
+            volumeSlider.oninput = (e) => {
+                const vol = parseFloat(e.target.value);
+                music.volume = vol;
+                lastVolume = vol;
+                if (vol === 0) {
+                    isMuted = true;
+                    muteBtn.innerHTML = '<i data-lucide="volume-x"></i>';
+                } else {
+                    isMuted = false;
+                    muteBtn.innerHTML = '<i data-lucide="volume-2"></i>';
+                }
+                lucide.createIcons();
+            };
 
             try {
                 const res = await fetch("pages.json?t=" + Date.now());
@@ -301,12 +352,15 @@
                     if (isMuted) {
                         music.pause();
                         muteBtn.innerHTML = '<i data-lucide="volume-x"></i>';
+                        volumeSlider.value = 0;
                     } else {
                         const pageIndex = flip.getCurrentPageIndex();
                         if (pageIndex > 0 && pageIndex < (pages.length - 1)) {
                             music.play().catch(e => {});
                         }
                         muteBtn.innerHTML = '<i data-lucide="volume-2"></i>';
+                        volumeSlider.value = lastVolume || 1;
+                        music.volume = volumeSlider.value;
                     }
                     lucide.createIcons();
                 };
