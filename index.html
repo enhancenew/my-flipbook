@@ -34,7 +34,7 @@
         #flipbook {
             box-shadow: 0 0 100px rgba(0,0,0,0.9);
             display: none; background-color: #0a0a0a; border-radius: 4px;
-            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
         }
         .page { background: #0a0a0a; overflow: hidden; position: relative; }
         .page-content {
@@ -137,18 +137,29 @@
                 const flip = new St.PageFlip(bookEl, {
                     width: 550, height: 733, size: "stretch", autoSize: true, centeringPerspective: true,
                     minWidth: 300, maxWidth: 1000, minHeight: 400, maxHeight: 1350,
-                    showCover: true, mobileScrollSupport: false, flippingTime: 1200, usePortrait: false, startZIndex: 0, maxShadowOpacity: 0.6
+                    showCover: true, mobileScrollSupport: true, flippingTime: 1200, usePortrait: true, startZIndex: 0, maxShadowOpacity: 0.6
                 });
                 flip.loadFromHTML(document.querySelectorAll('.page'));
+                
+                const updateTransform = (index) => {
+                    if (flip.getOrientation() === 'landscape') {
+                        if (index === 0) bookEl.style.transform = "translateX(-25%)";
+                        else if (index === pages.length - 1) bookEl.style.transform = "translateX(25%)";
+                        else bookEl.style.transform = "translateX(0)";
+                    } else {
+                        bookEl.style.transform = "translateX(0)";
+                    }
+                };
+
                 document.getElementById('loader').style.display = 'none';
                 bookEl.style.display = 'block';
-                bookEl.style.transform = "translateX(-25%)";
+                // Wait for initial orientation calculation
+                setTimeout(() => updateTransform(0), 100);
+
                 flip.on("flip", (e) => { 
                     const pageIndex = e.data;
                     currEl.textContent = pageIndex + 1; 
-                    if (pageIndex === 0) bookEl.style.transform = "translateX(-25%)";
-                    else if (pageIndex === pages.length - 1) bookEl.style.transform = "translateX(25%)";
-                    else bookEl.style.transform = "translateX(0)";
+                    updateTransform(pageIndex);
                     if (pageIndex > 0 && pageIndex < (pages.length - 1)) {
                         if (music.paused) music.play().catch(e => {});
                     } else {
@@ -156,15 +167,49 @@
                         if (pageIndex === 0) music.currentTime = 0;
                     }
                 });
-                document.getElementById('btn-prev').onclick = () => flip.flipPrev();
-                document.getElementById('btn-next').onclick = () => flip.flipNext();
-                document.getElementById('btn-first').onclick = () => flip.flip(0);
-                document.getElementById('btn-last').onclick = () => flip.flip(pages.length - 1);
+
+                document.getElementById('btn-prev').onclick = () => {
+                    const curr = flip.getCurrentPageIndex();
+                    if (flip.getOrientation() === 'landscape' && curr === pages.length - 1) {
+                        updateTransform(pages.length - 2);
+                        setTimeout(() => flip.flipPrev(), 300);
+                    } else {
+                        flip.flipPrev();
+                    }
+                };
+                document.getElementById('btn-next').onclick = () => {
+                    const curr = flip.getCurrentPageIndex();
+                    if (flip.getOrientation() === 'landscape' && curr === 0) {
+                        updateTransform(1);
+                        setTimeout(() => flip.flipNext(), 300);
+                    } else {
+                        flip.flipNext();
+                    }
+                };
+                document.getElementById('btn-first').onclick = () => {
+                    if (flip.getOrientation() === 'landscape') {
+                        updateTransform(0);
+                        setTimeout(() => flip.flip(0), 300);
+                    } else {
+                        flip.flip(0);
+                    }
+                };
+                document.getElementById('btn-last').onclick = () => {
+                    if (flip.getOrientation() === 'landscape') {
+                        updateTransform(pages.length - 1);
+                        setTimeout(() => flip.flip(pages.length - 1), 300);
+                    } else {
+                        flip.flip(pages.length - 1);
+                    }
+                };
                 document.getElementById('btn-fs').onclick = () => {
                     if (!document.fullscreenElement) document.documentElement.requestFullscreen();
                     else document.exitFullscreen();
                 };
-                window.onresize = () => flip.update();
+                window.onresize = () => {
+                    flip.update();
+                    updateTransform(flip.getCurrentPageIndex());
+                };
             } catch (e) { console.error(e); }
         });
     </script>
