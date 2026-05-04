@@ -82,10 +82,18 @@
         /* Remove absolute positioning to allow gap-based centering */
         .footer-center { display: flex; align-items: center; }
 
+        @media (max-width: 768px) {
+            .book-footer { gap: 15px; padding: 10px; flex-wrap: wrap; }
+            .footer-center { width: 100%; justify-content: center; order: -1; margin-bottom: 5px; }
+            .btn-tool { padding: 10px; } /* Larger touch target */
+            .page-counter { min-width: 50px; font-size: 13px; }
+        }
+
         .btn-tool {
             background: none; border: 1px solid #ddd; color: #666; cursor: pointer;
             padding: 8px; border-radius: 4px; transition: all 0.2s;
             display: flex; align-items: center; justify-content: center;
+            touch-action: manipulation;
         }
         .btn-tool:hover { background: #f0f0f0; color: #333; border-color: #bbb; }
         .btn-tool.active { background: var(--af-light-blue); color: #fff; border-color: var(--af-light-blue); }
@@ -170,14 +178,20 @@
                 const flip = new St.PageFlip(bookEl, {
                     width: 550, height: 733, size: "stretch", autoSize: true, centeringPerspective: true,
                     minWidth: 300, maxWidth: 1000, minHeight: 400, maxHeight: 1350,
-                    showCover: true, mobileScrollSupport: true, flippingTime: 1200, usePortrait: false, startZIndex: 0, maxShadowOpacity: 0.6
+                    showCover: true, mobileScrollSupport: true, flippingTime: 1000, usePortrait: true, 
+                    startZIndex: 0, maxShadowOpacity: 0.6, showDoublePage: true
                 });
                 flip.loadFromHTML(document.querySelectorAll('.page'));
                 
                 const updateTransform = (index) => {
-                    if (index === 0) bookEl.style.transform = "translateX(-25%)";
-                    else if (index === pages.length - 1) bookEl.style.transform = "translateX(25%)";
-                    else bookEl.style.transform = "translateX(0)";
+                    const orientation = flip.getOrientation();
+                    if (orientation === 'landscape') {
+                        if (index === 0) bookEl.style.transform = "translateX(-25%)";
+                        else if (index === pages.length - 1) bookEl.style.transform = "translateX(25%)";
+                        else bookEl.style.transform = "translateX(0)";
+                    } else {
+                        bookEl.style.transform = "translateX(0)";
+                    }
                 };
 
                 document.getElementById('loader').style.display = 'none';
