@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T10:56:39.476Z",
+  "generatedAt": "2026-05-04T11:03:43.578Z",
   "pages": [
     {
       "name": "frontcoverpage.jpeg",
@@ -50,6 +50,11 @@
       "name": "9.jpeg",
       "src": "pages/9.jpeg",
       "alt": "9"
+    },
+    {
+      "name": "10.jpeg",
+      "src": "pages/10.jpeg",
+      "alt": "10"
     },
     {
       "name": "backcoverpage.jpeg",
