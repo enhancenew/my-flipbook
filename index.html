@@ -6,82 +6,6 @@
     <title>HKSSL - Special Edition</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .view-stage {
-            flex: 1; display: flex; align-items: center; justify-content: center;
-            position: relative; overflow: hidden; padding: 40px;
-            background: #0a0a0a;
-        }
-        
-        #flipbook {
-            box-shadow: 0 0 100px rgba(0,0,0,0.9);
-            display: none;
-            background-color: #0a0a0a; /* Perfect match */
-            border-radius: 4px;
-        }
-
-        
-        .page { 
-            background: #0a0a0a; 
-            overflow: hidden; 
-            position: relative;
-        }
-        .page-content {
-            position: relative;
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
-        }
-        .page-bg {
-            position: absolute;
-            top: -20px; left: -20px; right: -20px; bottom: -20px;
-            width: calc(100% + 40px); height: calc(100% + 40px);
-            object-fit: cover;
-            filter: blur(25px) brightness(0.3);
-            opacity: 0.6;
-            z-index: 1;
-        }
-        .page-img {
-            position: relative;
-            max-width: 92%;
-            max-height: 92%;
-            object-fit: contain;
-            z-index: 5;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .page::after {
-            content: "";
-            position: absolute;
-            top: 0; bottom: 0;
-            width: 4px;
-            z-index: 15;
-            opacity: 0.3;
-        }
-        .stf__block.-left .page::after {
-            left: 0;
-            background: repeating-linear-gradient(to right, #333, #333 1px, transparent 1px, transparent 2px);
-        }
-        .stf__block.-right .page::after {
-            right: 0;
-            background: repeating-linear-gradient(to left, #333, #333 1px, transparent 1px, transparent 2px);
-        }
-
-        /* Visual indication of page stack on the edges */
-        .page::before {
-            content: "";
-            position: absolute;
-            top: 0; bottom: 0;
-            width: 10px;
-            z-index: 10;
-        }
-        .stf__block.-left .page::before {
-            right: 0;
-            background: linear-gradient(to left, rgba(0,0,0,0.5), transparent);
-        }
-        .stf__block.-right .page::before {
-            left: 0;
-            background: linear-gradient(to right, rgba(0,0,0,0.5), transparent);
-        }
         :root {
             --bg-color: #0a0a0a;
             --bar-color: rgba(18, 18, 18, 0.98);
@@ -95,9 +19,7 @@
             font-family: 'Inter', -apple-system, sans-serif;
             color: var(--text-main);
         }
-        .app-container {
-            display: flex; flex-direction: column; height: 100vh;
-        }
+        .app-container { display: flex; flex-direction: column; height: 100vh; }
         .header {
             height: var(--toolbar-h); background: var(--bar-color);
             display: flex; align-items: center; justify-content: space-between;
@@ -105,15 +27,46 @@
             z-index: 100; backdrop-filter: blur(10px);
         }
         .header h1 { font-size: 14px; letter-spacing: 2px; color: var(--accent-gold); margin: 0; }
-        
-        
-        
-        .page img { width: 100%; height: 100%; object-fit: contain; }
+        .view-stage {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; padding: 40px; background: #0a0a0a;
+        }
+        #flipbook {
+            box-shadow: 0 0 100px rgba(0,0,0,0.9);
+            display: none; background-color: #0a0a0a; border-radius: 4px;
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+        .page { background: #0a0a0a; overflow: hidden; position: relative; }
+        .page-content {
+            position: relative; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .page-bg {
+            position: absolute; top: -20px; left: -20px; right: -20px; bottom: -20px;
+            width: calc(100% + 40px); height: calc(100% + 40px);
+            object-fit: cover; filter: blur(25px) brightness(0.3); opacity: 0.6; z-index: 1;
+        }
+        .page-img {
+            position: relative; max-width: 92%; max-height: 92%;
+            object-fit: contain; z-index: 5;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05);
+        }
+        /* Realistic MULTI-LAYER page stack effect */
+        .page::after {
+            content: ""; position: absolute; top: 0; bottom: 0; width: 8px; z-index: 15; opacity: 0.6;
+        }
+        .stf__block.-left .page::after {
+            left: 0; background: repeating-linear-gradient(to right, #1a1a1a, #1a1a1a 1px, #0a0a0a 1px, #0a0a0a 2px, #333 2px, #333 3px, #0a0a0a 3px, #0a0a0a 4px);
+            box-shadow: inset 5px 0 10px rgba(0,0,0,0.5);
+        }
+        .stf__block.-right .page::after {
+            right: 0; background: repeating-linear-gradient(to left, #1a1a1a, #1a1a1a 1px, #0a0a0a 1px, #0a0a0a 2px, #333 2px, #333 3px, #0a0a0a 3px, #0a0a0a 4px);
+            box-shadow: inset -5px 0 10px rgba(0,0,0,0.5);
+        }
         .footer {
             height: var(--toolbar-h); background: var(--bar-color);
             display: flex; align-items: center; justify-content: center;
-            padding: 0 20px; gap: 20px; border-top: 1px solid rgba(255,255,255,0.05);
-            z-index: 100;
+            padding: 0 20px; gap: 20px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 100;
         }
         .btn-tool {
             background: none; border: none; color: #888; cursor: pointer;
@@ -164,63 +117,45 @@
             const currEl = document.getElementById('curr');
             const totalEl = document.getElementById('total');
             const music = document.getElementById('bg-music');
-            
             try {
                 const res = await fetch("pages.json?t=" + Date.now());
                 const data = await res.json();
                 let pages = data.pages;
-
-                // Set music source if available
-                if (data.music) {
-                    music.src = data.music;
-                } else {
-                    // Fallback to Indian Wedding Sitar if no file is in music/ folder
-                    // music.src = "https://cdn.pixabay.com/audio/2022/03/23/audio_827f2f1e6a.mp3";
-                }
-
-                if (pages.length % 2 !== 0) {
-                    pages.splice(pages.length - 1, 0, { isBlank: true, alt: "Blank Page" });
-                }
-
+                if (data.music) music.src = data.music;
+                if (pages.length % 2 !== 0) pages.splice(pages.length - 1, 0, { isBlank: true, alt: "Blank Page" });
                 totalEl.textContent = pages.length;
-
                 pages.forEach(p => {
                     const div = document.createElement("div");
                     div.className = "page";
                     if (p.isBlank) {
                         div.innerHTML = "<div class=\"page-blank\"></div>";
                     } else {
-                        div.innerHTML = "<div class=\"page-content\">" +
-                                        "<img class=\"page-bg\" src=\"" + p.src + "\" alt=\"\">" +
-                                        "<img class=\"page-img\" src=\"" + p.src + "\" alt=\"" + p.alt + "\">" +
-                                        "</div>";
+                        div.innerHTML = "<div class=\"page-content\"><img class=\"page-bg\" src=\"" + p.src + "\"><img class=\"page-img\" src=\"" + p.src + "\" alt=\"" + p.alt + "\"></div>";
                     }
                     bookEl.appendChild(div);
                 });
-
                 const flip = new St.PageFlip(bookEl, {
                     width: 550, height: 733, size: "stretch", autoSize: true, centeringPerspective: true,
                     minWidth: 300, maxWidth: 1000, minHeight: 400, maxHeight: 1350,
                     showCover: true, mobileScrollSupport: false, flippingTime: 1200, usePortrait: false, startZIndex: 0, maxShadowOpacity: 0.6
                 });
-
                 flip.loadFromHTML(document.querySelectorAll('.page'));
                 document.getElementById('loader').style.display = 'none';
                 bookEl.style.display = 'block';
-
-                flip.on('flip', (e) => { 
+                bookEl.style.transform = "translateX(-25%)";
+                flip.on("flip", (e) => { 
                     const pageIndex = e.data;
                     currEl.textContent = pageIndex + 1; 
-
-                    // Audio Logic
+                    if (pageIndex === 0) bookEl.style.transform = "translateX(-25%)";
+                    else if (pageIndex === pages.length - 1) bookEl.style.transform = "translateX(25%)";
+                    else bookEl.style.transform = "translateX(0)";
                     if (pageIndex > 0 && pageIndex < (pages.length - 1)) {
-                        if (music.paused) music.play().catch(err => console.log("Music play blocked:", err));
-                    } else if (pageIndex === 0 || pageIndex === (pages.length - 1)) {
+                        if (music.paused) music.play().catch(e => {});
+                    } else {
                         music.pause();
                         if (pageIndex === 0) music.currentTime = 0;
                     }
                 });
-
                 document.getElementById('btn-prev').onclick = () => flip.flipPrev();
                 document.getElementById('btn-next').onclick = () => flip.flipNext();
                 document.getElementById('btn-first').onclick = () => flip.flip(0);
@@ -229,14 +164,9 @@
                     if (!document.fullscreenElement) document.documentElement.requestFullscreen();
                     else document.exitFullscreen();
                 };
-
                 window.onresize = () => flip.update();
             } catch (e) { console.error(e); }
         });
     </script>
 </body>
 </html>
-
-
-
-
