@@ -84,9 +84,7 @@
             <button class="btn-tool" id="btn-next"><i data-lucide="chevron-right"></i></button>
             <button class="btn-tool" id="btn-last"><i data-lucide="chevrons-right"></i></button>
         </footer>
-        <audio id="bg-music" loop>
-            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-        </audio>
+        <audio id="bg-music" loop></audio>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
     <script>
@@ -101,6 +99,14 @@
                 const res = await fetch("pages.json?t=" + Date.now());
                 const data = await res.json();
                 let pages = data.pages;
+
+                // Set music source if available
+                if (data.music) {
+                    music.src = data.music;
+                } else {
+                    // Fallback to placeholder if no file is in music/ folder
+                    music.src = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+                }
 
                 if (pages.length % 2 !== 0) {
                     pages.splice(pages.length - 1, 0, { isBlank: true, alt: "Blank Page" });
