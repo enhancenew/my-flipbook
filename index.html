@@ -63,24 +63,25 @@
         }
 
         .book-footer {
-            padding: 10px 15px; background: #fff; border-top: 1px solid var(--af-border);
-            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            flex-shrink: 0;
+            padding: 15px 30px; background: #fff; border-top: 1px solid var(--af-border);
+            display: flex; align-items: center; justify-content: center; gap: 20px;
             position: relative; z-index: 20;
         }
-        .footer-left, .footer-right, .footer-center { display: flex; align-items: center; gap: 8px; }
+        .footer-tools { display: flex; align-items: center; gap: 15px; }
 
         @media (max-width: 768px) {
             .view-stage { padding: 5px; }
-            .book-footer { padding: 8px; gap: 5px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-            .footer-center { gap: 5px; }
-            .btn-tool { padding: 6px; }
-            .select-tool { padding: 5px 8px; font-size: 11px; }
-            .page-counter { min-width: 40px; font-size: 12px; }
-            .btn-fs-text { display: none; } /* Hide text on mobile to save space */
+            .book-footer { padding: 10px; gap: 10px; flex-wrap: wrap; }
+            .footer-tools { gap: 8px; flex-wrap: wrap; justify-content: center; }
+            .btn-tool { padding: 8px; }
+            .select-tool { padding: 6px 10px; font-size: 12px; }
+            .page-counter { min-width: 50px; font-size: 13px; }
+            .btn-fs-text { display: none; }
         }
 
         @media (max-height: 500px) and (orientation: landscape) {
-            .book-footer { padding: 4px 10px; }
+            .book-footer { padding: 5px 15px; }
             .view-stage { padding: 2px; }
         }
         .btn-tool:hover { background: #f0f0f0; color: #333; border-color: #bbb; }
@@ -118,26 +119,23 @@
             </div>
             
             <div class="book-footer">
-                <div class="footer-left">
+                <div class="footer-tools">
                     <button class="btn-tool" id="btn-first" title="First Page"><i data-lucide="chevrons-left"></i></button>
                     <button class="btn-tool" id="btn-prev" title="Previous Page"><i data-lucide="chevron-left"></i></button>
-                </div>
-
-                <div class="footer-center">
+                    
                     <div class="page-counter"><span id="curr">0</span> / <span id="total">0</span></div>
+                    
                     <button class="btn-tool" id="btn-mute" title="Toggle Mute"><i data-lucide="volume-2"></i></button>
-                    <div style="width: 10px;"></div>
+                    
                     <select class="select-tool" id="select-autoflip">
                         <option value="0">Auto-Flip: Off</option>
                         <option value="5000">5 Seconds</option>
                         <option value="10000">10 Seconds</option>
                     </select>
-                </div>
 
-                <div class="footer-right">
                     <button class="btn-tool" id="btn-next" title="Next Page"><i data-lucide="chevron-right"></i></button>
                     <button class="btn-tool" id="btn-last" title="Last Page"><i data-lucide="chevrons-right"></i></button>
-                    <div style="width: 20px;"></div>
+                    
                     <span class="btn-fs-text" id="btn-fs">Fullscreen</span>
                 </div>
             </div>
