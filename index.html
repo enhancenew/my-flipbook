@@ -119,7 +119,6 @@
             animation: spin 1s linear infinite; margin: 0 auto 10px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .page-blank { background: #0a0a0a; width: 100%; height: 100%; }
     </style>
 </head>
 <body>
@@ -137,6 +136,13 @@
                     </marquee>
                 </div>
             </div>
+            <div class="controls" style="margin-right: 15px;">
+                <select id="select-autoflip" class="autoflip-select">
+                    <option value="0">Autoflip: Off</option>
+                    <option value="5000">Autoflip: 5s</option>
+                    <option value="10000">Autoflip: 10s</option>
+                </select>
+            </div>
             <button class="btn-tool" id="btn-fs-header" title="Fullscreen"><i data-lucide="maximize"></i></button>
         </header>
         <main class="view-stage">
@@ -148,12 +154,7 @@
         </main>
         <footer class="footer">
             <div class="footer-side">
-                <button class="btn-tool" id="btn-mute" title="Mute/Unmute"><i data-lucide="volume-2"></i></button>
-                <select id="select-autoflip" class="autoflip-select">
-                    <option value="0">Autoflip: Off</option>
-                    <option value="5000">Autoflip: 5s</option>
-                    <option value="10000">Autoflip: 10s</option>
-                </select>
+                <!-- Empty for alignment -->
             </div>
             <div class="footer-center">
                 <button class="btn-tool" id="btn-first"><i data-lucide="chevrons-left"></i></button>
@@ -163,7 +164,7 @@
                 <button class="btn-tool" id="btn-last"><i data-lucide="chevrons-right"></i></button>
             </div>
             <div class="footer-side" style="justify-content: flex-end;">
-                <button class="btn-tool" id="btn-fs" title="Fullscreen"><i data-lucide="maximize"></i></button>
+                <button class="btn-tool" id="btn-mute" title="Mute/Unmute"><i data-lucide="volume-2"></i></button>
             </div>
         </footer>
         <audio id="bg-music" loop></audio>
@@ -347,10 +348,6 @@
                     } else {
                         flip.flip(pages.length - 1);
                     }
-                };
-                document.getElementById('btn-fs').onclick = () => {
-                    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-                    else document.exitFullscreen();
                 };
                 document.getElementById('btn-fs-header').onclick = () => {
                     if (!document.fullscreenElement) document.documentElement.requestFullscreen();
