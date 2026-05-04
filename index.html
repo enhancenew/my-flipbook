@@ -63,33 +63,24 @@
         }
 
         .book-footer {
-            flex-shrink: 0;
             padding: 10px 15px; background: #fff; border-top: 1px solid var(--af-border);
-            display: flex; align-items: center; justify-content: space-between; gap: 15px;
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
             position: relative; z-index: 20;
         }
-        .footer-left, .footer-right, .footer-center { display: flex; align-items: center; gap: 10px; }
+        .footer-left, .footer-right, .footer-center { display: flex; align-items: center; gap: 8px; }
 
         @media (max-width: 768px) {
             .view-stage { padding: 5px; }
-            .book-footer { 
-                padding: 10px; 
-                flex-wrap: wrap; 
-                justify-content: center; 
-                gap: 10px; 
-            }
-            .footer-left, .footer-right { order: 2; }
-            .footer-center { order: 1; width: 100%; justify-content: center; margin-bottom: 2px; }
-            .btn-tool { padding: 8px; }
-            .select-tool { padding: 6px 10px; font-size: 12px; }
-            .page-counter { min-width: 50px; font-size: 13px; }
-            .btn-fs-text { display: none; }
+            .book-footer { padding: 8px; gap: 5px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .footer-center { gap: 5px; }
+            .btn-tool { padding: 6px; }
+            .select-tool { padding: 5px 8px; font-size: 11px; }
+            .page-counter { min-width: 40px; font-size: 12px; }
+            .btn-fs-text { display: none; } /* Hide text on mobile to save space */
         }
 
         @media (max-height: 500px) and (orientation: landscape) {
-            .book-footer { padding: 5px 15px; gap: 10px; flex-wrap: nowrap; }
-            .footer-center { width: auto; order: 0; margin-bottom: 0; }
-            .footer-left, .footer-right { order: 0; }
+            .book-footer { padding: 4px 10px; }
             .view-stage { padding: 2px; }
         }
         .btn-tool:hover { background: #f0f0f0; color: #333; border-color: #bbb; }
