@@ -84,6 +84,9 @@
             <button class="btn-tool" id="btn-next"><i data-lucide="chevron-right"></i></button>
             <button class="btn-tool" id="btn-last"><i data-lucide="chevrons-right"></i></button>
         </footer>
+        <audio id="bg-music" loop>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        </audio>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
     <script>
@@ -92,6 +95,7 @@
             const bookEl = document.getElementById('flipbook');
             const currEl = document.getElementById('curr');
             const totalEl = document.getElementById('total');
+            const music = document.getElementById('bg-music');
             
             try {
                 const res = await fetch("pages.json?t=" + Date.now());
@@ -125,7 +129,18 @@
                 document.getElementById('loader').style.display = 'none';
                 bookEl.style.display = 'block';
 
-                flip.on('flip', (e) => { currEl.textContent = e.data + 1; });
+                flip.on('flip', (e) => { 
+                    const pageIndex = e.data;
+                    currEl.textContent = pageIndex + 1; 
+
+                    // Audio Logic
+                    if (pageIndex > 0 && pageIndex < (pages.length - 1)) {
+                        if (music.paused) music.play().catch(err => console.log("Music play blocked:", err));
+                    } else if (pageIndex === 0 || pageIndex === (pages.length - 1)) {
+                        music.pause();
+                        if (pageIndex === 0) music.currentTime = 0;
+                    }
+                });
 
                 document.getElementById('btn-prev').onclick = () => flip.flipPrev();
                 document.getElementById('btn-next').onclick = () => flip.flipNext();
