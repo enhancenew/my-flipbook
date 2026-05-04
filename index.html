@@ -37,10 +37,9 @@
         }
 
         #flipbook {
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            box-shadow: 0 0 100px rgba(0,0,0,0.9);
             display: none; background-color: #0a0a0a; border-radius: 4px;
-            transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
-            max-width: 100%; max-height: 100%;
+            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
         }
         .page { background: #0a0a0a; overflow: hidden; position: relative; }
         .page-content {
@@ -48,18 +47,27 @@
             display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
         .page-bg {
-            position: absolute; top: -10%; left: -10%; width: 120%; height: 120%;
-            object-fit: cover; filter: blur(20px) brightness(0.3); opacity: 0.5; z-index: 1;
+            position: absolute; top: -20px; left: -20px; right: -20px; bottom: -20px;
+            width: calc(100% + 40px); height: calc(100% + 40px);
+            object-fit: cover; filter: blur(25px) brightness(0.3); opacity: 0.6; z-index: 1;
         }
         .page-img {
-            position: relative; width: 100%; height: 100%;
+            position: relative; max-width: 95%; max-height: 95%;
             object-fit: contain; z-index: 5;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* Stack Effect */
+        /* Realistic MULTI-LAYER page stack effect */
         .page::after {
-            content: ""; position: absolute; top: 0; bottom: 0; width: 4px; z-index: 15; opacity: 0.4;
+            content: ""; position: absolute; top: 0; bottom: 0; width: 8px; z-index: 15; opacity: 0.6;
+        }
+        .stf__block.-left .page::after {
+            left: 0; background: repeating-linear-gradient(to right, #1a1a1a, #1a1a1a 1px, #0a0a0a 1px, #0a0a0a 2px, #333 2px, #333 3px, #0a0a0a 3px, #0a0a0a 4px);
+            box-shadow: inset 5px 0 10px rgba(0,0,0,0.5);
+        }
+        .stf__block.-right .page::after {
+            right: 0; background: repeating-linear-gradient(to left, #1a1a1a, #1a1a1a 1px, #0a0a0a 1px, #0a0a0a 2px, #333 2px, #333 3px, #0a0a0a 3px, #0a0a0a 4px);
+            box-shadow: inset -5px 0 10px rgba(0,0,0,0.5);
         }
 
         .book-footer {
@@ -171,8 +179,8 @@
                 });
                 const flip = new St.PageFlip(bookEl, {
                     width: 550, height: 733, size: "stretch", autoSize: true, centeringPerspective: true,
-                    minWidth: 300, maxWidth: 1000, minHeight: 400, maxHeight: 1350,
-                    showCover: true, mobileScrollSupport: true, flippingTime: 1200, usePortrait: false, 
+                    minWidth: 315, maxWidth: 1000, minHeight: 420, maxHeight: 1350,
+                    showCover: true, mobileScrollSupport: true, flippingTime: 1200, usePortrait: true, 
                     startZIndex: 0, maxShadowOpacity: 0.6
                 });
                 flip.loadFromHTML(document.querySelectorAll('.page'));
@@ -191,6 +199,18 @@
                 document.getElementById('loader').style.display = 'none';
                 bookEl.style.display = 'block';
                 setTimeout(() => updateTransform(0), 100);
+
+                flip.on("changeOrientation", (e) => {
+                    updateTransform(flip.getCurrentPageIndex());
+                });
+
+                flip.on("changeState", (e) => {
+                    if (e.data === 'flipping') {
+                        const curr = flip.getCurrentPageIndex();
+                        if (curr === 0) updateTransform(1);
+                        if (curr === pages.length - 1) updateTransform(pages.length - 2);
+                    }
+                });
 
                 let autoFlipInterval = null;
                 let currentDelay = 0; // 0 means auto-flip is off or paused
