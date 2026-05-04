@@ -80,9 +80,11 @@
         }
         .footer {
             height: var(--toolbar-h); background: var(--bar-color);
-            display: flex; align-items: center; justify-content: center;
-            padding: 0 20px; gap: 20px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 100;
         }
+        .footer-side { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .footer-center { display: flex; align-items: center; gap: 15px; justify-content: center; flex: 2; }
         .btn-tool {
             background: none; border: none; color: #888; cursor: pointer;
             padding: 8px; border-radius: 50%; transition: all 0.2s;
@@ -104,15 +106,6 @@
     <div class="app-container">
         <header class="header">
             <h1>HKSSL &#128141; &#127881;</h1>
-            <div class="controls">
-                <select id="select-autoflip" class="autoflip-select">
-                    <option value="0">Autoflip: Off</option>
-                    <option value="5000">Autoflip: 5s</option>
-                    <option value="10000">Autoflip: 10s</option>
-                </select>
-                <button class="btn-tool" id="btn-mute" title="Mute/Unmute"><i data-lucide="volume-2"></i></button>
-                <button class="btn-tool" id="btn-fs"><i data-lucide="maximize"></i></button>
-            </div>
         </header>
         <main class="view-stage">
             <div id="loader">
@@ -122,11 +115,24 @@
             <div id="flipbook"></div>
         </main>
         <footer class="footer">
-            <button class="btn-tool" id="btn-first"><i data-lucide="chevrons-left"></i></button>
-            <button class="btn-tool" id="btn-prev"><i data-lucide="chevron-left"></i></button>
-            <div class="page-counter"><span id="curr">0</span> / <span id="total">0</span></div>
-            <button class="btn-tool" id="btn-next"><i data-lucide="chevron-right"></i></button>
-            <button class="btn-tool" id="btn-last"><i data-lucide="chevrons-right"></i></button>
+            <div class="footer-side">
+                <button class="btn-tool" id="btn-mute" title="Mute/Unmute"><i data-lucide="volume-2"></i></button>
+                <select id="select-autoflip" class="autoflip-select">
+                    <option value="0">Autoflip: Off</option>
+                    <option value="5000">Autoflip: 5s</option>
+                    <option value="10000">Autoflip: 10s</option>
+                </select>
+            </div>
+            <div class="footer-center">
+                <button class="btn-tool" id="btn-first"><i data-lucide="chevrons-left"></i></button>
+                <button class="btn-tool" id="btn-prev"><i data-lucide="chevron-left"></i></button>
+                <div class="page-counter"><span id="curr">0</span> / <span id="total">0</span></div>
+                <button class="btn-tool" id="btn-next"><i data-lucide="chevron-right"></i></button>
+                <button class="btn-tool" id="btn-last"><i data-lucide="chevrons-right"></i></button>
+            </div>
+            <div class="footer-side" style="justify-content: flex-end;">
+                <button class="btn-tool" id="btn-fs" title="Fullscreen"><i data-lucide="maximize"></i></button>
+            </div>
         </footer>
         <audio id="bg-music" loop></audio>
     </div>
