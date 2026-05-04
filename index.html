@@ -27,6 +27,21 @@
             z-index: 100; backdrop-filter: blur(10px);
         }
         .header h1 { font-size: 14px; letter-spacing: 2px; color: var(--accent-gold); margin: 0; }
+        .controls { display: flex; align-items: center; gap: 10px; }
+        .autoflip-select {
+            background: rgba(255,255,255,0.05);
+            color: #888;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            font-size: 11px;
+            padding: 4px 8px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .autoflip-select:hover { color: #fff; background: rgba(255,255,255,0.1); }
+        .autoflip-select option { background: #1a1a1a; color: #fff; }
+
         .view-stage {
             flex: 1; display: flex; align-items: center; justify-content: center;
             position: relative; overflow: hidden; padding: 40px; background: #0a0a0a;
@@ -90,6 +105,12 @@
         <header class="header">
             <h1>HKSSL &#128141; &#127881;</h1>
             <div class="controls">
+                <select id="select-autoflip" class="autoflip-select">
+                    <option value="0">Autoflip: Off</option>
+                    <option value="5000">Autoflip: 5s</option>
+                    <option value="10000">Autoflip: 10s</option>
+                </select>
+                <button class="btn-tool" id="btn-mute" title="Mute/Unmute"><i data-lucide="volume-2"></i></button>
                 <button class="btn-tool" id="btn-fs"><i data-lucide="maximize"></i></button>
             </div>
         </header>
@@ -117,6 +138,12 @@
             const currEl = document.getElementById('curr');
             const totalEl = document.getElementById('total');
             const music = document.getElementById('bg-music');
+            const muteBtn = document.getElementById('btn-mute');
+            const autoflipSelect = document.getElementById('select-autoflip');
+            
+            let isMuted = false;
+            let autoFlipTimer = null;
+
             try {
                 const res = await fetch("pages.json?t=" + Date.now());
                 const data = await res.json();
@@ -151,6 +178,28 @@
                     }
                 };
 
+                const startAutoflip = () => {
+                    stopAutoflip();
+                    const interval = parseInt(autoflipSelect.value);
+                    if (interval > 0) {
+                        autoFlipTimer = setInterval(() => {
+                            if (flip.getCurrentPageIndex() < pages.length - 1) {
+                                flip.flipNext();
+                            } else {
+                                stopAutoflip();
+                                autoflipSelect.value = "0";
+                            }
+                        }, interval);
+                    }
+                };
+
+                const stopAutoflip = () => {
+                    if (autoFlipTimer) {
+                        clearInterval(autoFlipTimer);
+                        autoFlipTimer = null;
+                    }
+                };
+
                 document.getElementById('loader').style.display = 'none';
                 bookEl.style.display = 'block';
                 // Wait for initial orientation calculation
@@ -160,13 +209,39 @@
                     const pageIndex = e.data;
                     currEl.textContent = pageIndex + 1; 
                     updateTransform(pageIndex);
+                    
+                    // Audio logic
                     if (pageIndex > 0 && pageIndex < (pages.length - 1)) {
-                        if (music.paused) music.play().catch(e => {});
+                        if (!isMuted) music.play().catch(e => {});
                     } else {
                         music.pause();
                         if (pageIndex === 0) music.currentTime = 0;
                     }
+
+                    // Reset autoflip timer on manual flip
+                    if (parseInt(autoflipSelect.value) > 0) {
+                        startAutoflip();
+                    }
                 });
+
+                muteBtn.onclick = () => {
+                    isMuted = !isMuted;
+                    if (isMuted) {
+                        music.pause();
+                        muteBtn.innerHTML = '<i data-lucide="volume-x"></i>';
+                    } else {
+                        const pageIndex = flip.getCurrentPageIndex();
+                        if (pageIndex > 0 && pageIndex < (pages.length - 1)) {
+                            music.play().catch(e => {});
+                        }
+                        muteBtn.innerHTML = '<i data-lucide="volume-2"></i>';
+                    }
+                    lucide.createIcons();
+                };
+
+                autoflipSelect.onchange = () => {
+                    startAutoflip();
+                };
 
                 document.getElementById('btn-prev').onclick = () => {
                     const curr = flip.getCurrentPageIndex();
