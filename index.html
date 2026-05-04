@@ -13,6 +13,7 @@
             --text-main: #e0e0e0;
             --btn-hover-bg: rgba(255, 255, 255, 0.1);
             --btn-hover-text: #fff;
+            --slider-bg: rgba(255, 255, 255, 0.1);
             --toolbar-h: 50px;
         }
         body.light-theme {
@@ -22,6 +23,7 @@
             --text-main: #2c2c2c;
             --btn-hover-bg: rgba(0, 0, 0, 0.05);
             --btn-hover-text: #000;
+            --slider-bg: rgba(0, 0, 0, 0.1);
         }
         body, html {
             margin: 0; padding: 0; height: 100%;
@@ -131,7 +133,7 @@
             cursor: pointer;
             height: 4px;
             -webkit-appearance: none;
-            background: rgba(255,255,255,0.1);
+            background: var(--slider-bg);
             border-radius: 2px;
             outline: none;
         }
