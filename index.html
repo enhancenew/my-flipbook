@@ -4,319 +4,131 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HKSSL - Special Edition</title>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-color: #1a1a1a;
-            --surface-color: #2d2d2d;
-            --accent-saffron: #FF9933;
-            --accent-green: #138808;
-            --accent-blue: #000080;
-            --text-color: #ffffff;
-            --toolbar-height: 50px;
+            --bg-color: #0a0a0a;
+            --bar-color: rgba(18, 18, 18, 0.98);
+            --accent-gold: #d4af37;
+            --text-main: #e0e0e0;
+            --toolbar-h: 50px;
         }
-
         body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            background-color: var(--bg-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text-color);
+            margin: 0; padding: 0; height: 100%;
+            overflow: hidden; background-color: var(--bg-color);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-main);
         }
-
-        .toolbar {
-            height: var(--toolbar-height);
-            background-color: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 15px;
-            position: absolute;
-            top: 0;
-            width: 100%;
-            box-sizing: border-box;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .app-container {
+            display: flex; flex-direction: column; height: 100vh;
         }
-
-        .toolbar .title {
-            font-weight: bold;
-            font-size: 1rem;
-            letter-spacing: 1px;
-            color: var(--accent-saffron);
+        .header {
+            height: var(--toolbar-h); background: var(--bar-color);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            z-index: 100; backdrop-filter: blur(10px);
         }
-
-        .toolbar .controls {
-            display: flex;
-            gap: 5px;
+        .header h1 { font-size: 14px; letter-spacing: 2px; color: var(--accent-gold); margin: 0; }
+        .view-stage {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; padding: 20px;
         }
-
-        .btn-icon {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-icon:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        #flipbook-container {
-            position: absolute;
-            top: var(--toolbar-height);
-            bottom: var(--toolbar-height);
-            left: 0;
-            right: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            box-sizing: border-box;
-            overflow: auto; /* Allow scrolling when zoomed */
-        }
-
-        .flip-book {
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+        #flipbook {
+            box-shadow: 0 30px 100px rgba(0,0,0,0.8);
             display: none;
-            margin: auto;
-            transform-origin: center center;
-            transition: transform 0.2s ease-out;
         }
-
-                        .page {
-            background-color: #1a1a1a; /* Matches --bg-color */
-            background-image: 
-                linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 10%, rgba(0,0,0,0) 90%, rgba(0,0,0,0.5) 100%),
-                url("https://www.transparenttextures.com/patterns/dark-matter.png");
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05);
+        .page { background: #111; overflow: hidden; }
+        .page img { width: 100%; height: 100%; object-fit: contain; }
+        .footer {
+            height: var(--toolbar-h); background: var(--bar-color);
+            display: flex; align-items: center; justify-content: center;
+            padding: 0 20px; gap: 20px; border-top: 1px solid rgba(255,255,255,0.05);
+            z-index: 100;
         }
-
-        .page img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            /* Removed multiply blend mode as it doesn't work on dark backgrounds */
-            opacity: 1;
+        .btn-tool {
+            background: none; border: none; color: #888; cursor: pointer;
+            padding: 8px; border-radius: 50%; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
         }
-
-        .page-blank {
-            background: inherit;
-            width: 100%;
-            height: 100%;
-        }
-
-        
-
-        
-
-        
-
-        
-
-        .bottom-bar {
-            height: var(--toolbar-height);
-            background-color: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 15px;
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            box-sizing: border-box;
-            z-index: 1000;
-            gap: 15px;
-        }
-
-        .page-info {
-            font-size: 0.85rem;
-            min-width: 80px;
-            text-align: center;
-            font-variant-numeric: tabular-nums;
-        }
-
-        #loader {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 2000;
-        }
-
+        .btn-tool:hover { color: #fff; background: rgba(255,255,255,0.1); }
+        .page-counter { font-size: 12px; font-variant-numeric: tabular-nums; min-width: 60px; text-align: center; }
+        #loader { text-align: center; }
         .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-left: 3px solid var(--accent-saffron);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+            width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent-gold); border-radius: 50%;
+            animation: spin 1s linear infinite; margin: 0 auto 10px;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @media (max-width: 768px) {
-            #flipbook-container { padding: 5px; }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-
-    <div class="toolbar">
-        <div class="title">HKSSL <span style="color: white; font-weight: normal; font-size: 0.7rem;">SPECIAL EDITION</span></div>
-        <div class="controls">
-            <button class="btn-icon" id="btn-zoom-out" title="Zoom Out"><i data-lucide="minus"></i></button>
-            <button class="btn-icon" id="btn-zoom-in" title="Zoom In"><i data-lucide="plus"></i></button>
-            <button class="btn-icon" id="btn-fullscreen" title="Toggle Fullscreen"><i data-lucide="maximize"></i></button>
-        </div>
+    <div class="app-container">
+        <header class="header">
+            <h1>HKSSL</h1>
+            <div class="controls">
+                <button class="btn-tool" id="btn-fs"><i data-lucide="maximize"></i></button>
+            </div>
+        </header>
+        <main class="view-stage">
+            <div id="loader">
+                <div class="spinner"></div>
+                <p style="font-size: 12px; opacity: 0.5;">Generating Experience...</p>
+            </div>
+            <div id="flipbook"></div>
+        </main>
+        <footer class="footer">
+            <button class="btn-tool" id="btn-first"><i data-lucide="chevrons-left"></i></button>
+            <button class="btn-tool" id="btn-prev"><i data-lucide="chevron-left"></i></button>
+            <div class="page-counter"><span id="curr">0</span> / <span id="total">0</span></div>
+            <button class="btn-tool" id="btn-next"><i data-lucide="chevron-right"></i></button>
+            <button class="btn-tool" id="btn-last"><i data-lucide="chevrons-right"></i></button>
+        </footer>
     </div>
-
-    <div id="flipbook-container">
-        <div id="loader">
-            <div class="spinner"></div>
-            <p style="font-size: 0.8rem;">Ready...</p>
-        </div>
-        <div id="flipbook" class="flip-book"></div>
-    </div>
-
-    <div class="bottom-bar">
-        <button class="btn-icon" id="btn-first" title="First Page"><i data-lucide="chevrons-left"></i></button>
-        <button class="btn-icon" id="btn-prev" title="Previous Page"><i data-lucide="chevron-left"></i></button>
-        <div class="page-info">
-            <span id="current-page">0</span> / <span id="total-pages">0</span>
-        </div>
-        <button class="btn-icon" id="btn-next" title="Next Page"><i data-lucide="chevron-right"></i></button>
-        <button class="btn-icon" id="btn-last" title="Last Page"><i data-lucide="chevrons-right"></i></button>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
-            const flipBookElement = document.getElementById('flipbook');
-            const pageInfo = document.getElementById('current-page');
-            const totalPageInfo = document.getElementById('total-pages');
-            const loader = document.getElementById('loader');
-            let pageFlip = null;
-            let currentZoom = 1.0;
-
-            const preloadedImages = new Set();
-            function preloadImages(pages, currentIndex) {
-                const indicesToLoad = [currentIndex, currentIndex + 1, currentIndex + 2, currentIndex - 1];
-                indicesToLoad.forEach(idx => {
-                    if (idx >= 0 && idx < pages.length && !pages[idx].isBlank && !preloadedImages.has(pages[idx].src)) {
-                        const img = new Image();
-                        img.src = pages[idx].src;
-                        preloadedImages.add(pages[idx].src);
-                    }
-                });
-            }
-
+            const bookEl = document.getElementById('flipbook');
+            const currEl = document.getElementById('curr');
+            const totalEl = document.getElementById('total');
+            
             try {
-                const response = await fetch("pages.json?t=" + Date.now());
-                const data = await response.json();
-                let pages = data.pages;
+                const res = await fetch("pages.json?t=final");
+                const data = await res.json();
+                const pages = data.pages;
+                totalEl.textContent = pages.length;
 
-                if (pages.length % 2 !== 0) {
-                    pages.splice(pages.length - 1, 0, { isBlank: true, alt: 'Blank Page' });
-                }
-
-                totalPageInfo.textContent = pages.length;
-                preloadImages(pages, 0);
-
-                pages.forEach((page) => {
-                    const pageDiv = document.createElement('div');
-                    pageDiv.className = 'page';
-                    if (page.isBlank) {
-                        pageDiv.innerHTML = '<div class="page-blank"></div>';
-                    } else {
-                        pageDiv.innerHTML = "<img src=\"" + page.src + "\" alt=\"" + page.alt + "\">";
-                    }
-                    flipBookElement.appendChild(pageDiv);
+                pages.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = 'page';
+                    div.innerHTML = "<img src=\"" + p.src + "\" alt=\"" + p.alt + "\">";
+                    bookEl.appendChild(div);
                 });
 
-                const isMobile = window.innerWidth <= 768;
-                
-                pageFlip = new St.PageFlip(flipBookElement, {
-                    width: 550,
-                    height: 733,
-                    size: "stretch",
-                    minWidth: 300,
-                    maxWidth: isMobile ? 800 : 1200,
-                    minHeight: 400,
-                    maxHeight: isMobile ? 1000 : 1400,
-                    maxShadowOpacity: 0.3,
-                    showCover: true,
-                    mobileScrollSupport: false,
-                    flippingTime: 800,
-                    usePortrait: isMobile,
-                    startPage: 0
+                const flip = new St.PageFlip(bookEl, {
+                    width: 550, height: 733, size: "stretch",
+                    minWidth: 300, maxWidth: 1000, minHeight: 400, maxHeight: 1350,
+                    showCover: true, mobileScrollSupport: false, flippingTime: 1000
                 });
 
-                pageFlip.loadFromHTML(document.querySelectorAll('.page'));
-                loader.style.display = 'none';
-                flipBookElement.style.display = 'block';
+                flip.loadFromHTML(document.querySelectorAll('.page'));
+                document.getElementById('loader').style.display = 'none';
+                bookEl.style.display = 'block';
 
-                pageFlip.on('flip', (e) => {
-                    const newIndex = e.data;
-                    pageInfo.textContent = newIndex + 1;
-                    preloadImages(pages, newIndex);
-                });
+                flip.on('flip', (e) => { currEl.textContent = e.data + 1; });
 
-                document.getElementById('btn-prev').addEventListener('click', () => pageFlip.flipPrev());
-                document.getElementById('btn-next').addEventListener('click', () => pageFlip.flipNext());
-                document.getElementById('btn-first').addEventListener('click', () => pageFlip.flip(0));
-                document.getElementById('btn-last').addEventListener('click', () => pageFlip.flip(pages.length - 1));
-                
-                // Zoom Controls
-                document.getElementById('btn-zoom-in').addEventListener('click', () => {
-                    if (currentZoom < 2.5) {
-                        currentZoom += 0.2;
-                        flipBookElement.style.transform = "scale(" + currentZoom + ")";
-                    }
-                });
+                document.getElementById('btn-prev').onclick = () => flip.flipPrev();
+                document.getElementById('btn-next').onclick = () => flip.flipNext();
+                document.getElementById('btn-first').onclick = () => flip.flip(0);
+                document.getElementById('btn-last').onclick = () => flip.flip(pages.length - 1);
+                document.getElementById('btn-fs').onclick = () => {
+                    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+                    else document.exitFullscreen();
+                };
 
-                document.getElementById('btn-zoom-out').addEventListener('click', () => {
-                    if (currentZoom > 0.6) {
-                        currentZoom -= 0.2;
-                        flipBookElement.style.transform = "scale(" + currentZoom + ")";
-                    }
-                });
-
-                document.getElementById('btn-fullscreen').addEventListener('click', () => {
-                    if (!document.fullscreenElement) {
-                        document.documentElement.requestFullscreen();
-                    } else {
-                        document.exitFullscreen();
-                    }
-                });
-
-                window.addEventListener('resize', () => {
-                    pageFlip.update(); 
-                });
-
-            } catch (error) {
-                console.error('Error:', error);
-                loader.innerHTML = '<p style="color: #ff6b6b; font-size: 0.8rem;">Load Failed</p>';
-            }
+                window.onresize = () => flip.update();
+            } catch (e) { console.error(e); }
         });
     </script>
 </body>
 </html>
-
-
