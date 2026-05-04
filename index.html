@@ -97,6 +97,12 @@
         }
         .btn-tool:hover { background: #f0f0f0; color: #333; border-color: #bbb; }
         .btn-tool.active { background: var(--af-light-blue); color: #fff; border-color: var(--af-light-blue); }
+        .select-tool {
+            background: #fff; border: 1px solid #ddd; color: #666; cursor: pointer;
+            padding: 7px 10px; border-radius: 4px; transition: all 0.2s;
+            font-size: 13px; font-weight: 600; outline: none;
+        }
+        .select-tool:focus { border-color: var(--af-light-blue); }
         .page-counter { font-size: 14px; font-weight: 600; color: #555; min-width: 60px; text-align: center; font-variant-numeric: tabular-nums; }
         
         .btn-fs-text { font-size: 13px; font-weight: 600; color: var(--af-light-blue); cursor: pointer; text-decoration: underline; }
@@ -133,9 +139,11 @@
                     <div class="page-counter"><span id="curr">0</span> / <span id="total">0</span></div>
                     <button class="btn-tool" id="btn-mute" title="Toggle Mute"><i data-lucide="volume-2"></i></button>
                     <div style="width: 10px;"></div>
-                    <button class="btn-tool" id="btn-5s">5s</button>
-                    <button class="btn-tool" id="btn-10s">10s</button>
-                    <button class="btn-tool" id="btn-pause-flip" title="Pause Auto-flip"><i data-lucide="pause"></i></button>
+                    <select class="select-tool" id="select-autoflip">
+                        <option value="0">Auto-Flip: Off</option>
+                        <option value="5000">5 Seconds</option>
+                        <option value="10000">10 Seconds</option>
+                    </select>
                 </div>
 
                 <div class="footer-right">
@@ -216,7 +224,8 @@
                             }
                         } else {
                             stopAutoFlip();
-                            document.querySelectorAll('#btn-5s, #btn-10s, #btn-pause-flip').forEach(b => b.classList.remove('active'));
+                            document.getElementById('select-autoflip').value = "0";
+                            currentDelay = 0;
                         }
                     }, delay);
                 };
@@ -235,31 +244,28 @@
                     if (pageIndex > 0 && pageIndex < (pages.length - 1)) {
                         if (music.paused) {
                             music.play().then(() => {
-                                // Start auto-flip if a delay was previously selected and we just started playing
                                 if (currentDelay > 0 && !autoFlipInterval) startAutoFlip(currentDelay);
                             }).catch(e => {});
                         }
                     } else {
                         music.pause();
                         stopAutoFlip();
-                        if (pageIndex === 0) music.currentTime = 0;
+                        if (pageIndex === 0) {
+                            music.currentTime = 0;
+                            document.getElementById('select-autoflip').value = "0";
+                            currentDelay = 0;
+                        }
                     }
                 });
 
-                document.getElementById('btn-5s').onclick = () => {
-                    document.querySelectorAll('#btn-5s, #btn-10s, #btn-pause-flip').forEach(b => b.classList.remove('active'));
-                    document.getElementById('btn-5s').classList.add('active');
-                    startAutoFlip(5000);
-                };
-                document.getElementById('btn-10s').onclick = () => {
-                    document.querySelectorAll('#btn-5s, #btn-10s, #btn-pause-flip').forEach(b => b.classList.remove('active'));
-                    document.getElementById('btn-10s').classList.add('active');
-                    startAutoFlip(10000);
-                };
-                document.getElementById('btn-pause-flip').onclick = () => {
-                    document.querySelectorAll('#btn-5s, #btn-10s, #btn-pause-flip').forEach(b => b.classList.remove('active'));
-                    document.getElementById('btn-pause-flip').classList.add('active');
-                    stopAutoFlip();
+                document.getElementById('select-autoflip').onchange = (e) => {
+                    const val = parseInt(e.target.value);
+                    if (val === 0) {
+                        stopAutoFlip();
+                        currentDelay = 0;
+                    } else {
+                        startAutoFlip(val);
+                    }
                 };
 
                 document.getElementById('btn-prev').onclick = () => {
