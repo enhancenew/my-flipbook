@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>HKSSL Presentation - Special Edition</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -16,11 +16,11 @@
             margin: 0; padding: 0; height: 100%;
             background-color: var(--af-grey-bg);
             font-family: 'Inter', -apple-system, sans-serif;
-            overflow: hidden;
+            overflow: hidden; touch-action: none;
         }
 
         .presentation-container {
-            display: flex; flex-direction: column; height: 100vh;
+            display: flex; flex-direction: column; height: 100dvh;
             width: 100%; margin: 0; padding: 0; box-sizing: border-box;
         }
 
@@ -33,16 +33,14 @@
         .view-stage {
             flex: 1; background: #0a0a0a; position: relative;
             display: flex; align-items: center; justify-content: center;
-            overflow: hidden; padding: 5px;
-        }
-        @media (max-width: 600px) {
-            .view-stage { padding: 0; }
+            overflow: hidden; padding: 10px;
         }
 
         #flipbook {
-            box-shadow: 0 0 100px rgba(0,0,0,0.9);
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
             display: none; background-color: #0a0a0a; border-radius: 4px;
             transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+            max-width: 100%; max-height: 100%;
         }
         .page { background: #0a0a0a; overflow: hidden; position: relative; }
         .page-content {
@@ -50,50 +48,40 @@
             display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
         .page-bg {
-            position: absolute; top: -20px; left: -20px; right: -20px; bottom: -20px;
-            width: calc(100% + 40px); height: calc(100% + 40px);
-            object-fit: cover; filter: blur(25px) brightness(0.3); opacity: 0.6; z-index: 1;
+            position: absolute; top: -10%; left: -10%; width: 120%; height: 120%;
+            object-fit: cover; filter: blur(20px) brightness(0.3); opacity: 0.5; z-index: 1;
         }
         .page-img {
-            position: relative; max-width: 92%; max-height: 92%;
+            position: relative; width: 100%; height: 100%;
             object-fit: contain; z-index: 5;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
         }
 
         /* Stack Effect */
         .page::after {
-            content: ""; position: absolute; top: 0; bottom: 0; width: 8px; z-index: 15; opacity: 0.6;
-        }
-        .stf__block.-left .page::after {
-            left: 0; background: repeating-linear-gradient(to right, #1a1a1a, #1a1a1a 1px, #0a0a0a 1px, #0a0a0a 2px, #333 2px, #333 3px, #0a0a0a 3px, #0a0a0a 4px);
-            box-shadow: inset 5px 0 10px rgba(0,0,0,0.5);
-        }
-        .stf__block.-right .page::after {
-            right: 0; background: repeating-linear-gradient(to left, #1a1a1a, #1a1a1a 1px, #0a0a0a 1px, #0a0a0a 2px, #333 2px, #333 3px, #0a0a0a 3px, #0a0a0a 4px);
-            box-shadow: inset -5px 0 10px rgba(0,0,0,0.5);
+            content: ""; position: absolute; top: 0; bottom: 0; width: 4px; z-index: 15; opacity: 0.4;
         }
 
         .book-footer {
-            padding: 15px 30px; background: #fff; border-top: 1px solid var(--af-border);
-            display: flex; align-items: center; justify-content: center; gap: 30px;
-            position: relative;
+            padding: 10px 15px; background: #fff; border-top: 1px solid var(--af-border);
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            position: relative; z-index: 20;
         }
-        .footer-left, .footer-right, .footer-center { display: flex; align-items: center; gap: 10px; }
-        /* Remove absolute positioning to allow gap-based centering */
-        .footer-center { display: flex; align-items: center; }
+        .footer-left, .footer-right, .footer-center { display: flex; align-items: center; gap: 8px; }
 
         @media (max-width: 768px) {
-            .book-footer { gap: 15px; padding: 10px; flex-wrap: wrap; }
-            .footer-center { width: 100%; justify-content: center; order: -1; margin-bottom: 5px; }
-            .btn-tool { padding: 10px; } /* Larger touch target */
-            .page-counter { min-width: 50px; font-size: 13px; }
+            .view-stage { padding: 5px; }
+            .book-footer { padding: 8px; gap: 5px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .footer-center { gap: 5px; }
+            .btn-tool { padding: 6px; }
+            .select-tool { padding: 5px 8px; font-size: 11px; }
+            .page-counter { min-width: 40px; font-size: 12px; }
+            .btn-fs-text { display: none; } /* Hide text on mobile to save space */
         }
 
-        .btn-tool {
-            background: none; border: 1px solid #ddd; color: #666; cursor: pointer;
-            padding: 8px; border-radius: 4px; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center;
-            touch-action: manipulation;
+        @media (max-height: 500px) and (orientation: landscape) {
+            .book-footer { padding: 4px 10px; }
+            .view-stage { padding: 2px; }
         }
         .btn-tool:hover { background: #f0f0f0; color: #333; border-color: #bbb; }
         .btn-tool.active { background: var(--af-light-blue); color: #fff; border-color: var(--af-light-blue); }
