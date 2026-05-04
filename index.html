@@ -59,6 +59,7 @@
             animation: spin 1s linear infinite; margin: 0 auto 10px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .page-blank { background: #0a0a0a; width: 100%; height: 100%; }
     </style>
 </head>
 <body>
@@ -93,15 +94,24 @@
             const totalEl = document.getElementById('total');
             
             try {
-                const res = await fetch("pages.json?t=final");
+                const res = await fetch("pages.json?t=" + Date.now());
                 const data = await res.json();
-                const pages = data.pages;
+                let pages = data.pages;
+
+                if (pages.length % 2 !== 0) {
+                    pages.splice(pages.length - 1, 0, { isBlank: true, alt: "Blank Page" });
+                }
+
                 totalEl.textContent = pages.length;
 
                 pages.forEach(p => {
                     const div = document.createElement('div');
                     div.className = 'page';
-                    div.innerHTML = "<img src=\"" + p.src + "\" alt=\"" + p.alt + "\">";
+                    if (p.isBlank) {
+                        div.innerHTML = "<div class=\"page-blank\"></div>";
+                    } else {
+                        div.innerHTML = "<img src=\"" + p.src + "\" alt=\"" + p.alt + "\">";
+                    }
                     bookEl.appendChild(div);
                 });
 
