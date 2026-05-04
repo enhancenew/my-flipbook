@@ -2,6 +2,7 @@
     "name":  "hkssl",
     "version":  "1.0.0",
     "scripts":  {
+                    "start": "npx serve",
                     "build":  "node scripts/generate-pages-manifest.js",
                     "populate":  "node scripts/populate-reference-content.js"
                 }

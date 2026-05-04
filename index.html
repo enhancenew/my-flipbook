@@ -2,39 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HKSSL - Special Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <title>HKSSL Presentation - Special Edition</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-color: #0a0a0a;
-            --bar-color: rgba(18, 18, 18, 0.98);
+            --af-light-blue: #3498db;
+            --af-grey-bg: #f4f7f8;
+            --af-border: #e1e8ed;
             --accent-gold: #d4af37;
-            --text-main: #e0e0e0;
-            --toolbar-h: 50px;
         }
         body, html {
             margin: 0; padding: 0; height: 100%;
-            overflow: hidden; background-color: var(--bg-color);
+            background-color: var(--af-grey-bg);
             font-family: 'Inter', -apple-system, sans-serif;
-            color: var(--text-main);
+            overflow: hidden;
         }
-        .app-container { display: flex; flex-direction: column; height: 100vh; }
-        .header {
-            height: var(--toolbar-h); background: var(--bar-color);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
-            z-index: 100; backdrop-filter: blur(10px);
+
+        .presentation-container {
+            display: flex; flex-direction: column; height: 100vh;
+            width: 100%; margin: 0; padding: 0; box-sizing: border-box;
         }
-        .header h1 { font-size: 14px; letter-spacing: 2px; color: var(--accent-gold); margin: 0; }
+
+        .basic-left-container {
+            flex: 1; background: #fff; 
+            overflow: hidden; 
+            display: flex; flex-direction: column;
+        }
+
         .view-stage {
-            flex: 1; display: flex; align-items: center; justify-content: center;
-            position: relative; overflow: hidden; padding: 40px; background: #0a0a0a;
+            flex: 1; background: #0a0a0a; position: relative;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; padding: 5px;
         }
+        @media (max-width: 600px) {
+            .view-stage { padding: 0; }
+        }
+
         #flipbook {
             box-shadow: 0 0 100px rgba(0,0,0,0.9);
             display: none; background-color: #0a0a0a; border-radius: 4px;
-            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
+            transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
         }
         .page { background: #0a0a0a; overflow: hidden; position: relative; }
         .page-content {
@@ -51,7 +59,8 @@
             object-fit: contain; z-index: 5;
             box-shadow: 0 15px 50px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05);
         }
-        /* Realistic MULTI-LAYER page stack effect */
+
+        /* Stack Effect */
         .page::after {
             content: ""; position: absolute; top: 0; bottom: 0; width: 8px; z-index: 15; opacity: 0.6;
         }
@@ -63,22 +72,30 @@
             right: 0; background: repeating-linear-gradient(to left, #1a1a1a, #1a1a1a 1px, #0a0a0a 1px, #0a0a0a 2px, #333 2px, #333 3px, #0a0a0a 3px, #0a0a0a 4px);
             box-shadow: inset -5px 0 10px rgba(0,0,0,0.5);
         }
-        .footer {
-            height: var(--toolbar-h); background: var(--bar-color);
-            display: flex; align-items: center; justify-content: center;
-            padding: 0 20px; gap: 20px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 100;
+
+        .book-footer {
+            padding: 15px 30px; background: #fff; border-top: 1px solid var(--af-border);
+            display: flex; align-items: center; justify-content: center; gap: 30px;
+            position: relative;
         }
+        .footer-left, .footer-right, .footer-center { display: flex; align-items: center; gap: 10px; }
+        /* Remove absolute positioning to allow gap-based centering */
+        .footer-center { display: flex; align-items: center; }
+
         .btn-tool {
-            background: none; border: none; color: #888; cursor: pointer;
-            padding: 8px; border-radius: 50%; transition: all 0.2s;
+            background: none; border: 1px solid #ddd; color: #666; cursor: pointer;
+            padding: 8px; border-radius: 4px; transition: all 0.2s;
             display: flex; align-items: center; justify-content: center;
         }
-        .btn-tool:hover { color: #fff; background: rgba(255,255,255,0.1); }
-        .page-counter { font-size: 12px; font-variant-numeric: tabular-nums; min-width: 60px; text-align: center; }
-        #loader { text-align: center; }
+        .btn-tool:hover { background: #f0f0f0; color: #333; border-color: #bbb; }
+        .page-counter { font-size: 14px; font-weight: 600; color: #555; min-width: 60px; text-align: center; font-variant-numeric: tabular-nums; }
+        
+        .btn-fs-text { font-size: 13px; font-weight: 600; color: var(--af-light-blue); cursor: pointer; text-decoration: underline; }
+
+        #loader { text-align: center; width: 100%; }
         .spinner {
             width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.1);
-            border-top-color: var(--accent-gold); border-radius: 50%;
+            border-top-color: var(--af-light-blue); border-radius: 50%;
             animation: spin 1s linear infinite; margin: 0 auto 10px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -86,29 +103,39 @@
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <header class="header">
-            <h1>HKSSL &#128141; &#127881;</h1>
-            <div class="controls">
-                <button class="btn-tool" id="btn-fs"><i data-lucide="maximize"></i></button>
+
+    <div class="presentation-container">
+        <div class="basic-left-container">
+            <div class="view-stage">
+                <div id="loader">
+                    <div class="spinner"></div>
+                    <p style="font-size: 12px; opacity: 0.5; color: #fff;">Launching Presentation...</p>
+                </div>
+                <div id="flipbook"></div>
             </div>
-        </header>
-        <main class="view-stage">
-            <div id="loader">
-                <div class="spinner"></div>
-                <p style="font-size: 12px; opacity: 0.5;">Generating Experience...</p>
+            
+            <div class="book-footer">
+                <div class="footer-left">
+                    <button class="btn-tool" id="btn-first" title="First Page"><i data-lucide="chevrons-left"></i></button>
+                    <button class="btn-tool" id="btn-prev" title="Previous Page"><i data-lucide="chevron-left"></i></button>
+                </div>
+
+                <div class="footer-center">
+                    <div class="page-counter"><span id="curr">0</span> / <span id="total">0</span></div>
+                </div>
+
+                <div class="footer-right">
+                    <button class="btn-tool" id="btn-next" title="Next Page"><i data-lucide="chevron-right"></i></button>
+                    <button class="btn-tool" id="btn-last" title="Last Page"><i data-lucide="chevrons-right"></i></button>
+                    <div style="width: 20px;"></div>
+                    <span class="btn-fs-text" id="btn-fs">Fullscreen</span>
+                </div>
             </div>
-            <div id="flipbook"></div>
-        </main>
-        <footer class="footer">
-            <button class="btn-tool" id="btn-first"><i data-lucide="chevrons-left"></i></button>
-            <button class="btn-tool" id="btn-prev"><i data-lucide="chevron-left"></i></button>
-            <div class="page-counter"><span id="curr">0</span> / <span id="total">0</span></div>
-            <button class="btn-tool" id="btn-next"><i data-lucide="chevron-right"></i></button>
-            <button class="btn-tool" id="btn-last"><i data-lucide="chevrons-right"></i></button>
-        </footer>
-        <audio id="bg-music" loop></audio>
+        </div>
     </div>
+
+    <audio id="bg-music" loop></audio>
+
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -137,23 +164,18 @@
                 const flip = new St.PageFlip(bookEl, {
                     width: 550, height: 733, size: "stretch", autoSize: true, centeringPerspective: true,
                     minWidth: 300, maxWidth: 1000, minHeight: 400, maxHeight: 1350,
-                    showCover: true, mobileScrollSupport: true, flippingTime: 1200, usePortrait: true, startZIndex: 0, maxShadowOpacity: 0.6
+                    showCover: true, mobileScrollSupport: true, flippingTime: 1200, usePortrait: false, startZIndex: 0, maxShadowOpacity: 0.6
                 });
                 flip.loadFromHTML(document.querySelectorAll('.page'));
                 
                 const updateTransform = (index) => {
-                    if (flip.getOrientation() === 'landscape') {
-                        if (index === 0) bookEl.style.transform = "translateX(-25%)";
-                        else if (index === pages.length - 1) bookEl.style.transform = "translateX(25%)";
-                        else bookEl.style.transform = "translateX(0)";
-                    } else {
-                        bookEl.style.transform = "translateX(0)";
-                    }
+                    if (index === 0) bookEl.style.transform = "translateX(-25%)";
+                    else if (index === pages.length - 1) bookEl.style.transform = "translateX(25%)";
+                    else bookEl.style.transform = "translateX(0)";
                 };
 
                 document.getElementById('loader').style.display = 'none';
                 bookEl.style.display = 'block';
-                // Wait for initial orientation calculation
                 setTimeout(() => updateTransform(0), 100);
 
                 flip.on("flip", (e) => { 
@@ -168,39 +190,39 @@
                     }
                 });
 
+                flip.on("changeState", (e) => {
+                    if (e.data === 'flipping') {
+                        const curr = flip.getCurrentPageIndex();
+                        if (curr === 0) updateTransform(1);
+                        if (curr === pages.length - 1) updateTransform(pages.length - 2);
+                    }
+                });
+
                 document.getElementById('btn-prev').onclick = () => {
                     const curr = flip.getCurrentPageIndex();
-                    if (flip.getOrientation() === 'landscape' && curr === pages.length - 1) {
+                    if (curr === pages.length - 1) {
                         updateTransform(pages.length - 2);
-                        setTimeout(() => flip.flipPrev(), 300);
+                        setTimeout(() => flip.flipPrev(), 550);
                     } else {
                         flip.flipPrev();
                     }
                 };
                 document.getElementById('btn-next').onclick = () => {
                     const curr = flip.getCurrentPageIndex();
-                    if (flip.getOrientation() === 'landscape' && curr === 0) {
+                    if (curr === 0) {
                         updateTransform(1);
-                        setTimeout(() => flip.flipNext(), 300);
+                        setTimeout(() => flip.flipNext(), 550);
                     } else {
                         flip.flipNext();
                     }
                 };
                 document.getElementById('btn-first').onclick = () => {
-                    if (flip.getOrientation() === 'landscape') {
-                        updateTransform(0);
-                        setTimeout(() => flip.flip(0), 300);
-                    } else {
-                        flip.flip(0);
-                    }
+                    updateTransform(0);
+                    setTimeout(() => flip.flip(0), 550);
                 };
                 document.getElementById('btn-last').onclick = () => {
-                    if (flip.getOrientation() === 'landscape') {
-                        updateTransform(pages.length - 1);
-                        setTimeout(() => flip.flip(pages.length - 1), 300);
-                    } else {
-                        flip.flip(pages.length - 1);
-                    }
+                    updateTransform(pages.length - 1);
+                    setTimeout(() => flip.flip(pages.length - 1), 550);
                 };
                 document.getElementById('btn-fs').onclick = () => {
                     if (!document.fullscreenElement) document.documentElement.requestFullscreen();
