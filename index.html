@@ -303,6 +303,29 @@
             let lastVolume = 1;
             let autoFlipTimer = null;
 
+            // Session-based Cache Busting
+            // sessionStorage is cleared when the tab/browser is closed.
+            let sessionId = sessionStorage.getItem('flipbook_session_id');
+            if (!sessionId) {
+                sessionId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+                sessionStorage.setItem('flipbook_session_id', sessionId);
+            }
+
+            const preloadImages = (pages) => {
+                const promises = pages.map(p => {
+                    if (p.isBlank) return Promise.resolve();
+                    return new Promise((resolve) => {
+                        const img = new Image();
+                        // Append session ID to bypass persistent disk cache across different sessions
+                        const srcWithSession = `${p.src}?s=${sessionId}`;
+                        img.onload = () => resolve();
+                        img.onerror = () => resolve(); // Resolve anyway to not block the app
+                        img.src = srcWithSession;
+                    });
+                });
+                return Promise.all(promises);
+            };
+
             volumeSlider.oninput = (e) => {
                 const vol = parseFloat(e.target.value);
                 music.volume = vol;
@@ -321,6 +344,11 @@
                 const res = await fetch("pages.json?t=" + Date.now());
                 const data = await res.json();
                 let pages = data.pages;
+                
+                // Start Preloading
+                document.querySelector('#loader p').textContent = "Caching Assets for Smooth Flipping...";
+                await preloadImages(pages);
+
                 if (data.music) music.src = data.music;
                 if (pages.length % 2 !== 0) pages.splice(pages.length - 1, 0, { isBlank: true, alt: "Blank Page" });
                 totalEl.textContent = pages.length;
@@ -330,7 +358,9 @@
                     if (p.isBlank) {
                         div.innerHTML = "<div class=\"page-blank\"></div>";
                     } else {
-                        div.innerHTML = "<div class=\"page-content\"><img class=\"page-bg\" src=\"" + p.src + "\"><img class=\"page-img\" src=\"" + p.src + "\" alt=\"" + p.alt + "\"></div>";
+                        // Use the session-busted URL for the actual images as well
+                        const srcWithSession = `${p.src}?s=${sessionId}`;
+                        div.innerHTML = "<div class=\"page-content\"><img class=\"page-bg\" src=\"" + srcWithSession + "\"><img class=\"page-img\" src=\"" + srcWithSession + "\" alt=\"" + p.alt + "\"></div>";
                     }
                     bookEl.appendChild(div);
                 });
