@@ -6,5 +6,6 @@
                        },
     "recipient_email":  "enhance_New@outlook.com",
     "service":  "emailjs",
-    "enabled":  true
+    "enabled":  false
+//    ,"enabled":  true
 }
