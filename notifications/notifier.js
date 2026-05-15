@@ -1,10 +1,10 @@
 ﻿(async function() {
     try {
-        // Fetch config to check if notifications are enabled
-        const configRes = await fetch('notifications/config.json');
+        // Fetch config with cache-buster to ensure toggle state is fresh
+        const configRes = await fetch('notifications/config.json?t=' + Date.now());
         const config = await configRes.json();
 
-        if (!config.enabled) {
+        if (!config || config.enabled !== true) {
             console.log('Notifications are disabled.');
             return;
         }
@@ -41,7 +41,7 @@
         console.log('Access Notification Details:', details);
 
         // Notify via EmailJS if configured and script is loaded
-        if (config.service === 'emailjs' && typeof emailjs !== 'undefined' && config.emailjs_config.service_id !== 'YOUR_SERVICE_ID') {
+        if (config.service === 'emailjs' && typeof emailjs !== 'undefined' && config.emailjs_config.service_id !== 'service_id_placeholder' && config.emailjs_config.service_id !== 'YOUR_SERVICE_ID') {
             emailjs.send(config.emailjs_config.service_id, config.emailjs_config.template_id, {
                 to_email: config.recipient_email,
                 subject: 'New Website Access: ' + details.ip,
