@@ -1,0 +1,151 @@
+{
+  "generatedAt": "2026-05-23T07:56:21.937Z",
+  "books": [
+    {
+      "id": "book1",
+      "title": "Book 1",
+      "cover": "books/book1/pages/frontcoverpage.jpeg",
+      "pages": [
+        {
+          "name": "frontcoverpage.jpeg",
+          "src": "books/book1/pages/frontcoverpage.jpeg",
+          "alt": "frontcoverpage"
+        },
+        {
+          "name": "1.jpeg",
+          "src": "books/book1/pages/1.jpeg",
+          "alt": "1"
+        },
+        {
+          "name": "2.jpeg",
+          "src": "books/book1/pages/2.jpeg",
+          "alt": "2"
+        },
+        {
+          "name": "3.jpeg",
+          "src": "books/book1/pages/3.jpeg",
+          "alt": "3"
+        },
+        {
+          "name": "4.jpeg",
+          "src": "books/book1/pages/4.jpeg",
+          "alt": "4"
+        },
+        {
+          "name": "5.jpeg",
+          "src": "books/book1/pages/5.jpeg",
+          "alt": "5"
+        },
+        {
+          "name": "6.jpeg",
+          "src": "books/book1/pages/6.jpeg",
+          "alt": "6"
+        },
+        {
+          "name": "7.jpeg",
+          "src": "books/book1/pages/7.jpeg",
+          "alt": "7"
+        },
+        {
+          "name": "8.jpeg",
+          "src": "books/book1/pages/8.jpeg",
+          "alt": "8"
+        },
+        {
+          "name": "9.jpeg",
+          "src": "books/book1/pages/9.jpeg",
+          "alt": "9"
+        },
+        {
+          "name": "10.jpeg",
+          "src": "books/book1/pages/10.jpeg",
+          "alt": "10"
+        },
+        {
+          "name": "loader.png",
+          "src": "books/book1/pages/loader.png",
+          "alt": "loader"
+        },
+        {
+          "name": "backcoverpage.jpeg",
+          "src": "books/book1/pages/backcoverpage.jpeg",
+          "alt": "backcoverpage"
+        }
+      ],
+      "music": "books/book1/music/kanmani_telugu_song.mp3"
+    },
+    {
+      "id": "book2",
+      "title": "Book 2",
+      "cover": "books/book2/pages/frontcoverpage.jpeg",
+      "pages": [
+        {
+          "name": "frontcoverpage.jpeg",
+          "src": "books/book2/pages/frontcoverpage.jpeg",
+          "alt": "frontcoverpage"
+        },
+        {
+          "name": "1.jpeg",
+          "src": "books/book2/pages/1.jpeg",
+          "alt": "1"
+        },
+        {
+          "name": "2.jpeg",
+          "src": "books/book2/pages/2.jpeg",
+          "alt": "2"
+        },
+        {
+          "name": "3.jpeg",
+          "src": "books/book2/pages/3.jpeg",
+          "alt": "3"
+        },
+        {
+          "name": "4.jpeg",
+          "src": "books/book2/pages/4.jpeg",
+          "alt": "4"
+        },
+        {
+          "name": "5.jpeg",
+          "src": "books/book2/pages/5.jpeg",
+          "alt": "5"
+        },
+        {
+          "name": "6.jpeg",
+          "src": "books/book2/pages/6.jpeg",
+          "alt": "6"
+        },
+        {
+          "name": "7.jpeg",
+          "src": "books/book2/pages/7.jpeg",
+          "alt": "7"
+        },
+        {
+          "name": "8.jpeg",
+          "src": "books/book2/pages/8.jpeg",
+          "alt": "8"
+        },
+        {
+          "name": "9.jpeg",
+          "src": "books/book2/pages/9.jpeg",
+          "alt": "9"
+        },
+        {
+          "name": "10.jpeg",
+          "src": "books/book2/pages/10.jpeg",
+          "alt": "10"
+        },
+        {
+          "name": "loader.png",
+          "src": "books/book2/pages/loader.png",
+          "alt": "loader"
+        },
+        {
+          "name": "backcoverpage.jpeg",
+          "src": "books/book2/pages/backcoverpage.jpeg",
+          "alt": "backcoverpage"
+        }
+      ],
+      "music": "books/book2/music/kanmani_telugu_song.mp3"
+    }
+  ]
+}
