@@ -15,8 +15,12 @@
             --btn-hover-text: #fff;
             --slider-bg: rgba(255, 255, 255, 0.1);
             --toolbar-h: 60px;
-            --pillar-color: #1a1a1a;
-            --pillar-shadow: rgba(0,0,0,0.5);
+            
+            /* Pillar Styling */
+            --pillar-width: 30px;
+            --pillar-grad-start: #2a2a2a;
+            --pillar-grad-mid: #3a3a3a;
+            --pillar-grad-end: #1a1a1a;
         }
         body.light-theme {
             --bg-color: #f5f5f5;
@@ -26,7 +30,9 @@
             --btn-hover-bg: rgba(0, 0, 0, 0.05);
             --btn-hover-text: #000;
             --slider-bg: rgba(0, 0, 0, 0.1);
-            --pillar-color: #e0e0e0;
+            --pillar-grad-start: #e0e0e0;
+            --pillar-grad-mid: #f0f0f0;
+            --pillar-grad-end: #d0d0d0;
         }
         body, html {
             margin: 0; padding: 0; height: 100%;
@@ -37,27 +43,21 @@
         }
         
         .app-container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            width: 100vw;
-            position: relative;
+            display: flex; flex-direction: column; height: 100vh; width: 100vw; position: relative;
         }
 
         .header {
             height: var(--toolbar-h); background: var(--bar-color);
             display: flex; align-items: center; justify-content: space-between;
             padding: 0 20px; border-bottom: 1px solid rgba(0,0,0,0.05);
-            z-index: 1000; backdrop-filter: blur(10px);
-            flex-shrink: 0;
+            z-index: 1000; backdrop-filter: blur(10px); flex-shrink: 0;
         }
         body:not(.light-theme) .header { border-bottom: 1px solid rgba(255,255,255,0.05); }
         .header h1 { font-size: 14px; letter-spacing: 2px; color: var(--accent-gold); margin: 0; }
         
         .view-stage {
-            flex-grow: 1;
-            display: flex; align-items: center; justify-content: center;
-            position: relative; overflow: hidden; padding: 30px;
+            flex-grow: 1; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; padding: 20px;
             background: var(--bg-color); z-index: 1;
         }
         
@@ -75,45 +75,52 @@
             box-sizing: border-box;
         }
         
-        /* Pillar Frame Implementation */
-        .pillar-frame {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            /* Creating the pillars using large borders */
-            border-left: 25px solid var(--pillar-color);
-            border-right: 25px solid var(--pillar-color);
-            box-shadow: inset 10px 0 15px var(--pillar-shadow), inset -10px 0 15px var(--pillar-shadow);
+        /* 3D Pillar Frame */
+        .pillar-container {
+            position: relative; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; box-sizing: border-box;
         }
         
-        /* Cover Logic: No pillars, full bleed */
-        .is-cover .pillar-frame {
-            border-left: none;
-            border-right: none;
-            box-shadow: none;
+        .pillar-left, .pillar-right {
+            position: absolute; top: 0; bottom: 0; width: var(--pillar-width);
+            z-index: 10; box-shadow: 0 0 15px rgba(0,0,0,0.5);
         }
-        .is-cover .page-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        
+        .pillar-left {
+            left: 0;
+            background: linear-gradient(to right, var(--pillar-grad-end), var(--pillar-grad-mid), var(--pillar-grad-start));
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .pillar-right {
+            right: 0;
+            background: linear-gradient(to left, var(--pillar-grad-end), var(--pillar-grad-mid), var(--pillar-grad-start));
+            border-left: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .img-wrapper {
+            position: relative; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0 var(--pillar-width); /* Space for pillars */
+            box-sizing: border-box; z-index: 5;
         }
 
         .page-img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain; /* Standardizes all images to fit within pillars */
-            z-index: 5;
+            max-width: 100%; max-height: 100%;
+            object-fit: contain; z-index: 5;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
         }
         
+        /* Cover Logic: No pillars, full bleed */
+        .is-cover .pillar-left, .is-cover .pillar-right { display: none; }
+        .is-cover .img-wrapper { padding: 0; }
+        .is-cover .page-img { width: 100%; height: 100%; object-fit: cover; box-shadow: none; }
+
         .page-bg {
             position: absolute; top: -20px; left: -20px; right: -20px; bottom: -20px;
             width: calc(100% + 40px); height: calc(100% + 40px);
-            object-fit: cover; filter: blur(30px) brightness(0.2); opacity: 0.5; z-index: 1;
+            object-fit: cover; filter: blur(30px) brightness(0.15); opacity: 0.5; z-index: 1;
         }
 
         .footer {
@@ -232,20 +239,22 @@
                         div.innerHTML = `
                             <div class="page-content">
                                 ${!isCover ? `<img class="page-bg" src="${p.src}">` : ''}
-                                <div class="pillar-frame">
-                                    <img class="page-img" src="${p.src}" alt="${p.alt}">
+                                <div class="pillar-container">
+                                    <div class="pillar-left"></div>
+                                    <div class="img-wrapper">
+                                        <img class="page-img" src="${p.src}" alt="${p.alt}">
+                                    </div>
+                                    <div class="pillar-right"></div>
                                 </div>
                             </div>`;
                     }
                     bookEl.appendChild(div);
                 });
 
-                // Landscape aspect ratio: Width 550, Height 367 (~3:2)
                 const flip = new St.PageFlip(bookEl, {
-                    width: 550, height: 367,
+                    width: 550, height: 367, // Landscape 3:2 Ratio
                     size: "stretch", autoSize: true, centeringPerspective: true,
-                    minWidth: 300, maxWidth: 1000, 
-                    minHeight: 200, maxHeight: 667,
+                    minWidth: 300, maxWidth: 1000, minHeight: 200, maxHeight: 667,
                     showCover: true, mobileScrollSupport: true, flippingTime: 1200, usePortrait: true
                 });
 
