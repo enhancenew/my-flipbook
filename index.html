@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -14,7 +14,9 @@
             --btn-hover-bg: rgba(255, 255, 255, 0.1);
             --btn-hover-text: #fff;
             --slider-bg: rgba(255, 255, 255, 0.1);
-            --toolbar-h: 50px;
+            --toolbar-h: 60px;
+            --pillar-color: #1a1a1a;
+            --pillar-shadow: rgba(0,0,0,0.5);
         }
         body.light-theme {
             --bg-color: #f5f5f5;
@@ -24,6 +26,7 @@
             --btn-hover-bg: rgba(0, 0, 0, 0.05);
             --btn-hover-text: #000;
             --slider-bg: rgba(0, 0, 0, 0.1);
+            --pillar-color: #e0e0e0;
         }
         body, html {
             margin: 0; padding: 0; height: 100%;
@@ -32,123 +35,101 @@
             color: var(--text-main);
             transition: background-color 0.3s, color 0.3s;
         }
-        /* Mobile vs Desktop specific styles */
-        body.is-mobile .header h1 { font-size: 12px; }
-        body.is-mobile .marquee-container { display: none; } /* Hide marquee on mobile to save space */
         
-        .header-logo {
-            height: 30px;
-            margin-right: 15px;
-            transition: all 0.3s;
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
         }
 
-        .app-container { display: flex; flex-direction: column; height: 100vh; }
         .header {
             height: var(--toolbar-h); background: var(--bar-color);
             display: flex; align-items: center; justify-content: space-between;
             padding: 0 20px; border-bottom: 1px solid rgba(0,0,0,0.05);
-            z-index: 100; backdrop-filter: blur(10px);
-            transition: background 0.3s;
+            z-index: 1000; backdrop-filter: blur(10px);
+            flex-shrink: 0;
         }
         body:not(.light-theme) .header { border-bottom: 1px solid rgba(255,255,255,0.05); }
         .header h1 { font-size: 14px; letter-spacing: 2px; color: var(--accent-gold); margin: 0; }
-        .controls { display: flex; align-items: center; gap: 10px; }
-        .autoflip-select {
-            background: rgba(255,255,255,0.05);
-            color: #888;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 4px;
-            font-size: 11px;
-            padding: 4px 8px;
-            cursor: pointer;
-            outline: none;
-            transition: all 0.2s;
-        }
-        .autoflip-select:hover { color: var(--btn-hover-text); background: var(--btn-hover-bg); }
-        .autoflip-select option { background: #1a1a1a; color: #fff; }
-
+        
         .view-stage {
-            flex: 1; display: flex; align-items: center; justify-content: center;
-            position: relative; overflow: hidden; padding: 40px; background: var(--bg-color);
+            flex-grow: 1;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; padding: 30px;
+            background: var(--bg-color); z-index: 1;
         }
+        
         #flipbook {
             display: none; background-color: transparent; border-radius: 4px;
             transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1), box-shadow 0.3s;
         }
+        
         .page { background: var(--bg-color); overflow: hidden; position: relative; }
         .page-blank { background: var(--bg-color); width: 100%; height: 100%; }
+        
         .page-content {
             position: relative; width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center; overflow: hidden;
+            box-sizing: border-box;
         }
+        
+        /* Pillar Frame Implementation */
+        .pillar-frame {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            /* Creating the pillars using large borders */
+            border-left: 25px solid var(--pillar-color);
+            border-right: 25px solid var(--pillar-color);
+            box-shadow: inset 10px 0 15px var(--pillar-shadow), inset -10px 0 15px var(--pillar-shadow);
+        }
+        
+        /* Cover Logic: No pillars, full bleed */
+        .is-cover .pillar-frame {
+            border-left: none;
+            border-right: none;
+            box-shadow: none;
+        }
+        .is-cover .page-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .page-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* Standardizes all images to fit within pillars */
+            z-index: 5;
+        }
+        
         .page-bg {
             position: absolute; top: -20px; left: -20px; right: -20px; bottom: -20px;
             width: calc(100% + 40px); height: calc(100% + 40px);
-            object-fit: cover; filter: blur(25px) brightness(0.3); opacity: 0.6; z-index: 1;
+            object-fit: cover; filter: blur(30px) brightness(0.2); opacity: 0.5; z-index: 1;
         }
-        .page-img {
-            position: relative; max-width: 92%; max-height: 92%;
-            object-fit: contain; z-index: 5;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05);
-        }
-        /* Realistic MULTI-LAYER page stack effect */
-        .page::after {
-            content: ""; position: absolute; top: 0; bottom: 0; width: 8px; z-index: 15; opacity: 0.6;
-        }
-        .stf__block.-left .page::after {
-            left: 0; background: repeating-linear-gradient(to right, #1a1a1a, #1a1a1a 1px, #0a0a0a 1px, #0a0a0a 2px, #333 2px, #333 3px, #0a0a0a 3px, #0a0a0a 4px);
-            box-shadow: inset 5px 0 10px rgba(0,0,0,0.5);
-        }
-        .stf__block.-right .page::after {
-            right: 0; background: repeating-linear-gradient(to left, #1a1a1a, #1a1a1a 1px, #0a0a0a 1px, #0a0a0a 2px, #333 2px, #333 3px, #0a0a0a 3px, #0a0a0a 4px);
-            box-shadow: inset -5px 0 10px rgba(0,0,0,0.5);
-        }
+
         .footer {
             height: var(--toolbar-h); background: var(--bar-color);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 100;
+            padding: 0 20px; border-top: 1px solid rgba(255,255,255,0.05); 
+            z-index: 1000; flex-shrink: 0;
         }
-        .footer-side { display: flex; align-items: center; gap: 10px; flex: 1; }
-        .footer-center { display: flex; align-items: center; gap: 15px; justify-content: center; flex: 2; }
         .btn-tool {
             background: none; border: none; color: #888; cursor: pointer;
-            padding: 8px; border-radius: 50%; transition: all 0.2s;
+            padding: 10px; border-radius: 50%; transition: all 0.2s;
             display: flex; align-items: center; justify-content: center;
         }
         .btn-tool:hover { color: var(--btn-hover-text); background: var(--btn-hover-bg); }
         .page-counter { font-size: 12px; font-variant-numeric: tabular-nums; min-width: 60px; text-align: center; }
         
-        /* Volume Control */
-        .volume-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-        }
-        .volume-slider {
-            width: 0;
-            opacity: 0;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            height: 4px;
-            -webkit-appearance: none;
-            background: var(--slider-bg);
-            border-radius: 2px;
-            outline: none;
-        }
-        .volume-container:hover .volume-slider {
-            width: 80px;
-            opacity: 1;
-        }
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            background: var(--accent-gold);
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
         #loader { text-align: center; }
         .spinner {
             width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.1);
@@ -157,67 +138,35 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Splash Screen */
         #splash-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #0a0a0a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 1s ease-out, visibility 1s;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0a0a0a; display: flex; align-items: center; justify-content: center;
+            z-index: 9999; transition: opacity 1s ease-out, visibility 1s;
         }
-        #splash-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-        .splash-content {
-            max-width: 80%;
-            max-height: 80%;
-            text-align: center;
-            animation: pulse 2s infinite ease-in-out;
-        }
-        .splash-img {
-            max-width: 100%;
-            max-height: 70vh;
-            border-radius: 8px;
-            box-shadow: 0 0 50px rgba(212, 175, 55, 0.3);
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.02); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
-        }
+        #splash-screen.hidden { opacity: 0; visibility: hidden; }
+        .splash-content { max-width: 80%; text-align: center; animation: pulse 2s infinite ease-in-out; }
+        .splash-img { max-width: 100%; max-height: 70vh; border-radius: 8px; }
     </style>
 </head>
 <body>
     <div id="splash-screen">
         <div class="splash-content">
-            <img src="pages/loader.png" class="splash-img" alt="Front Cover">
+            <img src="loader.png" class="splash-img" alt="Front Cover">
             <p style="color: var(--accent-gold); margin-top: 20px; font-size: 14px; letter-spacing: 2px;">PREPARING YOUR EXPERIENCE...</p>
         </div>
     </div>
     <div class="app-container">
         <header class="header">
             <div style="display: flex; align-items: center; gap: 20px; flex: 1; overflow: hidden;">
-                <div id="logo-container" class="header-logo" style="display: flex; align-items: center; gap: 10px; cursor: pointer;" title="Toggle Theme">
-                    <i id="device-logo" data-lucide="monitor" style="opacity: 0.5; width: 16px;"></i>
+                <div id="logo-container" style="display: flex; align-items: center; gap: 10px; cursor: pointer;" title="Toggle Theme">
                     <i id="theme-logo" data-lucide="moon"></i>
                 </div>
                 <h1>HKSSL &#128141; &#127881;</h1>
                 <div class="marquee-container" style="flex: 1; overflow: hidden;">
-                    <marquee behavior="scroll" direction="left" scrollamount="5" style="color: var(--accent-gold); font-size: 12px; font-weight: 500;">
-                        Congratulations to HK & SSL on Special Day! Wishing you both a lifetime of love and happiness! ✨ 💍 🥂 🎊 ❤️
+                    <marquee behavior="scroll" direction="left" scrollamount="5" style="color: var(--accent-gold); font-size: 12px;">
+                        Congratulations to HK & SSL on Special Day! ✨ 💍 🥂 🎊 ❤️
                     </marquee>
                 </div>
-            </div>
-            <div class="controls" style="margin-right: 15px;">
-                <select id="select-autoflip" class="autoflip-select">
-                    <option value="0">Autoflip: Off</option>
-                    <option value="5000">Autoflip: 5s</option>
-                    <option value="10000">Autoflip: 10s</option>
-                </select>
             </div>
             <button class="btn-tool" id="btn-fs-header" title="Fullscreen"><i data-lucide="maximize"></i></button>
         </header>
@@ -229,21 +178,16 @@
             <div id="flipbook"></div>
         </main>
         <footer class="footer">
-            <div class="footer-side">
-                <!-- Empty for alignment -->
-            </div>
-            <div class="footer-center">
+            <div style="flex: 1;"></div>
+            <div style="display: flex; align-items: center; gap: 15px; justify-content: center; flex: 2;">
                 <button class="btn-tool" id="btn-first"><i data-lucide="chevrons-left"></i></button>
                 <button class="btn-tool" id="btn-prev"><i data-lucide="chevron-left"></i></button>
                 <div class="page-counter"><span id="curr">0</span> / <span id="total">0</span></div>
                 <button class="btn-tool" id="btn-next"><i data-lucide="chevron-right"></i></button>
                 <button class="btn-tool" id="btn-last"><i data-lucide="chevrons-right"></i></button>
             </div>
-            <div class="footer-side" style="justify-content: flex-end;">
-                <div class="volume-container">
-                    <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.1" value="1">
-                    <button class="btn-tool" id="btn-mute" title="Mute/Unmute"><i data-lucide="volume-2"></i></button>
-                </div>
+            <div style="display: flex; justify-content: flex-end; flex: 1;">
+                <button class="btn-tool" id="btn-mute"><i data-lucide="volume-2"></i></button>
             </div>
         </footer>
         <audio id="bg-music" loop></audio>
@@ -251,255 +195,80 @@
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // Splash Screen Logic
             const splash = document.getElementById('splash-screen');
-            setTimeout(() => {
-                splash.classList.add('hidden');
-            }, 5000);
+            setTimeout(() => splash.classList.add('hidden'), 3000);
 
-            // Device Detection
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const deviceLogo = document.getElementById('device-logo');
-            if (isMobile) {
-                document.body.classList.add('is-mobile');
-                deviceLogo.setAttribute('data-lucide', 'smartphone');
-            } else {
-                deviceLogo.setAttribute('data-lucide', 'monitor');
-            }
-
-            // Theme Management
             const themeLogo = document.getElementById('theme-logo');
-            const logoContainer = document.getElementById('logo-container');
             const applyTheme = (isDark) => {
-                if (isDark) {
-                    document.body.classList.remove('light-theme');
-                    themeLogo.setAttribute('data-lucide', 'moon');
-                } else {
-                    document.body.classList.add('light-theme');
-                    themeLogo.setAttribute('data-lucide', 'sun');
-                }
+                if (isDark) document.body.classList.remove('light-theme');
+                else document.body.classList.add('light-theme');
+                themeLogo.setAttribute('data-lucide', isDark ? 'moon' : 'sun');
                 if (window.lucide) lucide.createIcons();
             };
-
-            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            applyTheme(darkModeMediaQuery.matches);
-            darkModeMediaQuery.addListener((e) => applyTheme(e.matches));
-
-            logoContainer.onclick = () => {
-                const currentlyLight = document.body.classList.contains('light-theme');
-                applyTheme(currentlyLight);
-            };
-
+            document.getElementById('logo-container').onclick = () => applyTheme(document.body.classList.contains('light-theme'));
             lucide.createIcons();
+
             const bookEl = document.getElementById('flipbook');
             const currEl = document.getElementById('curr');
             const totalEl = document.getElementById('total');
             const music = document.getElementById('bg-music');
-            const muteBtn = document.getElementById('btn-mute');
-            const volumeSlider = document.getElementById('volume-slider');
-            const autoflipSelect = document.getElementById('select-autoflip');
-            
-            let isMuted = false;
-            let lastVolume = 1;
-            let autoFlipTimer = null;
-
-            // Session-based Cache Busting
-            // sessionStorage is cleared when the tab/browser is closed.
-            let sessionId = sessionStorage.getItem('flipbook_session_id');
-            if (!sessionId) {
-                sessionId = Date.now().toString(36) + Math.random().toString(36).substr(2);
-                sessionStorage.setItem('flipbook_session_id', sessionId);
-            }
-
-            const preloadImages = (pages) => {
-                const promises = pages.map(p => {
-                    if (p.isBlank) return Promise.resolve();
-                    return new Promise((resolve) => {
-                        const img = new Image();
-                        // Append session ID to bypass persistent disk cache across different sessions
-                        const srcWithSession = `${p.src}?s=${sessionId}`;
-                        img.onload = () => resolve();
-                        img.onerror = () => resolve(); // Resolve anyway to not block the app
-                        img.src = srcWithSession;
-                    });
-                });
-                return Promise.all(promises);
-            };
-
-            volumeSlider.oninput = (e) => {
-                const vol = parseFloat(e.target.value);
-                music.volume = vol;
-                lastVolume = vol;
-                if (vol === 0) {
-                    isMuted = true;
-                    muteBtn.innerHTML = '<i data-lucide="volume-x"></i>';
-                } else {
-                    isMuted = false;
-                    muteBtn.innerHTML = '<i data-lucide="volume-2"></i>';
-                }
-                lucide.createIcons();
-            };
 
             try {
                 const res = await fetch("pages.json?t=" + Date.now());
                 const data = await res.json();
                 let pages = data.pages;
-                
-                // Start Preloading
-                document.querySelector('#loader p').textContent = "Caching Assets for Smooth Flipping...";
-                await preloadImages(pages);
-
                 if (data.music) music.src = data.music;
-                if (pages.length % 2 !== 0) pages.splice(pages.length - 1, 0, { isBlank: true, alt: "Blank Page" });
+                if (pages.length % 2 !== 0) pages.splice(pages.length - 1, 0, { isBlank: true });
                 totalEl.textContent = pages.length;
-                pages.forEach(p => {
+
+                pages.forEach((p, index) => {
                     const div = document.createElement("div");
-                    div.className = "page";
+                    const isCover = p.name && (p.name.toLowerCase().includes('frontcover') || p.name.toLowerCase().includes('backcover'));
+                    div.className = "page" + (isCover ? " is-cover" : "");
+                    
                     if (p.isBlank) {
-                        div.innerHTML = "<div class=\"page-blank\"></div>";
+                        div.innerHTML = "<div class='page-blank'></div>";
                     } else {
-                        // Use the session-busted URL for the actual images as well
-                        const srcWithSession = `${p.src}?s=${sessionId}`;
-                        div.innerHTML = "<div class=\"page-content\"><img class=\"page-bg\" src=\"" + srcWithSession + "\"><img class=\"page-img\" src=\"" + srcWithSession + "\" alt=\"" + p.alt + "\"></div>";
+                        div.innerHTML = `
+                            <div class="page-content">
+                                ${!isCover ? `<img class="page-bg" src="${p.src}">` : ''}
+                                <div class="pillar-frame">
+                                    <img class="page-img" src="${p.src}" alt="${p.alt}">
+                                </div>
+                            </div>`;
                     }
                     bookEl.appendChild(div);
                 });
+
+                // Landscape aspect ratio: Width 550, Height 367 (~3:2)
                 const flip = new St.PageFlip(bookEl, {
-                    width: 550, height: 733, size: "stretch", autoSize: true, centeringPerspective: true,
-                    minWidth: 300, maxWidth: 1000, minHeight: 400, maxHeight: 1350,
-                    showCover: true, mobileScrollSupport: true, flippingTime: 1200, usePortrait: true, startZIndex: 0, maxShadowOpacity: 0.6
+                    width: 550, height: 367,
+                    size: "stretch", autoSize: true, centeringPerspective: true,
+                    minWidth: 300, maxWidth: 1000, 
+                    minHeight: 200, maxHeight: 667,
+                    showCover: true, mobileScrollSupport: true, flippingTime: 1200, usePortrait: true
                 });
+
                 flip.loadFromHTML(document.querySelectorAll('.page'));
-                
-                const updateTransform = (index) => {
-                    const isLandscape = flip.getOrientation() === 'landscape';
-                    if (isLandscape) {
-                        if (index === 0) {
-                            bookEl.style.transform = "translateX(-25%)";
-                            bookEl.style.boxShadow = "none";
-                        } else if (index === pages.length - 1) {
-                            bookEl.style.transform = "translateX(25%)";
-                            bookEl.style.boxShadow = "none";
-                        } else {
-                            bookEl.style.transform = "translateX(0)";
-                            bookEl.style.boxShadow = "0 0 100px rgba(0,0,0,0.9)";
-                        }
-                    } else {
-                        bookEl.style.transform = "translateX(0)";
-                        bookEl.style.boxShadow = "0 0 100px rgba(0,0,0,0.9)";
-                    }
-                };
-
-                const startAutoflip = () => {
-                    stopAutoflip();
-                    const interval = parseInt(autoflipSelect.value);
-                    if (interval > 0) {
-                        autoFlipTimer = setInterval(() => {
-                            if (flip.getCurrentPageIndex() < pages.length - 1) {
-                                flip.flipNext();
-                            } else {
-                                stopAutoflip();
-                                autoflipSelect.value = "0";
-                            }
-                        }, interval);
-                    }
-                };
-
-                const stopAutoflip = () => {
-                    if (autoFlipTimer) {
-                        clearInterval(autoFlipTimer);
-                        autoFlipTimer = null;
-                    }
-                };
-
                 document.getElementById('loader').style.display = 'none';
                 bookEl.style.display = 'block';
-                // Wait for initial orientation calculation
-                setTimeout(() => updateTransform(0), 100);
 
                 flip.on("flip", (e) => { 
-                    const pageIndex = e.data;
-                    currEl.textContent = pageIndex + 1; 
-                    updateTransform(pageIndex);
-                    
-                    // Audio logic
-                    if (pageIndex > 0 && pageIndex < (pages.length - 1)) {
-                        if (!isMuted) music.play().catch(e => {});
-                    } else {
-                        music.pause();
-                        if (pageIndex === 0) music.currentTime = 0;
-                    }
-
-                    // Reset autoflip timer on manual flip
-                    if (parseInt(autoflipSelect.value) > 0) {
-                        startAutoflip();
-                    }
+                    currEl.textContent = e.data + 1;
+                    if (e.data > 0 && e.data < pages.length - 1) music.play().catch(e => {});
+                    else music.pause();
                 });
 
-                muteBtn.onclick = () => {
-                    isMuted = !isMuted;
-                    if (isMuted) {
-                        music.pause();
-                        muteBtn.innerHTML = '<i data-lucide="volume-x"></i>';
-                        volumeSlider.value = 0;
-                    } else {
-                        const pageIndex = flip.getCurrentPageIndex();
-                        if (pageIndex > 0 && pageIndex < (pages.length - 1)) {
-                            music.play().catch(e => {});
-                        }
-                        muteBtn.innerHTML = '<i data-lucide="volume-2"></i>';
-                        volumeSlider.value = lastVolume || 1;
-                        music.volume = volumeSlider.value;
-                    }
+                document.getElementById('btn-prev').onclick = () => flip.flipPrev();
+                document.getElementById('btn-next').onclick = () => flip.flipNext();
+                document.getElementById('btn-first').onclick = () => flip.flip(0);
+                document.getElementById('btn-last').onclick = () => flip.flip(pages.length - 1);
+                document.getElementById('btn-mute').onclick = () => {
+                    music.muted = !music.muted;
+                    document.getElementById('btn-mute').innerHTML = music.muted ? '<i data-lucide="volume-x"></i>' : '<i data-lucide="volume-2"></i>';
                     lucide.createIcons();
                 };
-
-                autoflipSelect.onchange = () => {
-                    startAutoflip();
-                };
-
-                document.getElementById('btn-prev').onclick = () => {
-                    const curr = flip.getCurrentPageIndex();
-                    if (flip.getOrientation() === 'landscape' && curr === pages.length - 1) {
-                        updateTransform(pages.length - 2);
-                        setTimeout(() => flip.flipPrev(), 300);
-                    } else {
-                        flip.flipPrev();
-                    }
-                };
-                document.getElementById('btn-next').onclick = () => {
-                    const curr = flip.getCurrentPageIndex();
-                    if (flip.getOrientation() === 'landscape' && curr === 0) {
-                        updateTransform(1);
-                        setTimeout(() => flip.flipNext(), 300);
-                    } else {
-                        flip.flipNext();
-                    }
-                };
-                document.getElementById('btn-first').onclick = () => {
-                    if (flip.getOrientation() === 'landscape') {
-                        updateTransform(0);
-                        setTimeout(() => flip.flip(0), 300);
-                    } else {
-                        flip.flip(0);
-                    }
-                };
-                document.getElementById('btn-last').onclick = () => {
-                    if (flip.getOrientation() === 'landscape') {
-                        updateTransform(pages.length - 1);
-                        setTimeout(() => flip.flip(pages.length - 1), 300);
-                    } else {
-                        flip.flip(pages.length - 1);
-                    }
-                };
-                document.getElementById('btn-fs-header').onclick = () => {
-                    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-                    else document.exitFullscreen();
-                };
-                window.onresize = () => {
-                    flip.update();
-                    updateTransform(flip.getCurrentPageIndex());
-                };
+                window.onresize = () => flip.update();
             } catch (e) { console.error(e); }
         });
     </script>
