@@ -21,6 +21,10 @@
             --pillar-grad-start: #2a2a2a;
             --pillar-grad-mid: #3a3a3a;
             --pillar-grad-end: #1a1a1a;
+            
+            /* Fixed Book Dimensions */
+            --book-w: 550px;
+            --book-h: 367px;
         }
         body.light-theme {
             --bg-color: #f5f5f5;
@@ -64,9 +68,14 @@
         #flipbook {
             display: none; background-color: transparent; border-radius: 4px;
             transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1), box-shadow 0.3s;
+            /* Force the fixed size on the container too */
+            width: var(--book-w); height: var(--book-h);
         }
         
-        .page { background: var(--bg-color); overflow: hidden; position: relative; }
+        .page { 
+            background: var(--bg-color); overflow: hidden; position: relative;
+            width: var(--book-w); height: var(--book-h);
+        }
         .page-blank { background: var(--bg-color); width: 100%; height: 100%; }
         
         .page-content {
@@ -107,8 +116,9 @@
         }
 
         .page-img {
-            max-width: 100%; max-height: 100%;
-            object-fit: contain; z-index: 5;
+            width: 100%; height: 100%;
+            object-fit: contain; /* Standardizes image fit while maintaining detail */
+            z-index: 5;
             box-shadow: 0 0 20px rgba(0,0,0,0.4);
         }
         
@@ -251,10 +261,12 @@
                     bookEl.appendChild(div);
                 });
 
+                // Strictly Fixed Page Size
                 const flip = new St.PageFlip(bookEl, {
-                    width: 550, height: 367, // Landscape 3:2 Ratio
-                    size: "stretch", autoSize: true, centeringPerspective: true,
-                    minWidth: 300, maxWidth: 1000, minHeight: 200, maxHeight: 667,
+                    width: 550, height: 367, // Fixed 3:2 landscape ratio
+                    size: "fixed", // Changed from "stretch" to "fixed" as per requirement
+                    autoSize: false, // Disabling autoSize to maintain strict dimensions
+                    centeringPerspective: true,
                     showCover: true, mobileScrollSupport: true, flippingTime: 1200, usePortrait: true
                 });
 
