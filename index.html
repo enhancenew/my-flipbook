@@ -15,14 +15,7 @@
             --btn-hover-text: #fff;
             --slider-bg: rgba(255, 255, 255, 0.1);
             --toolbar-h: 60px;
-            
-            /* Pillar Styling */
-            --pillar-width: 30px;
-            --pillar-grad-start: #2a2a2a;
-            --pillar-grad-mid: #3a3a3a;
-            --pillar-grad-end: #1a1a1a;
-            
-            /* Fixed Book Dimensions */
+            --pillar-w: 30px;
             --book-w: 550px;
             --book-h: 367px;
         }
@@ -34,9 +27,6 @@
             --btn-hover-bg: rgba(0, 0, 0, 0.05);
             --btn-hover-text: #000;
             --slider-bg: rgba(0, 0, 0, 0.1);
-            --pillar-grad-start: #e0e0e0;
-            --pillar-grad-mid: #f0f0f0;
-            --pillar-grad-end: #d0d0d0;
         }
         body, html {
             margin: 0; padding: 0; height: 100%;
@@ -46,17 +36,13 @@
             transition: background-color 0.3s, color 0.3s;
         }
         
-        .app-container {
-            display: flex; flex-direction: column; height: 100vh; width: 100vw; position: relative;
-        }
-
+        .app-container { display: flex; flex-direction: column; height: 100vh; width: 100vw; position: relative; }
         .header {
             height: var(--toolbar-h); background: var(--bar-color);
             display: flex; align-items: center; justify-content: space-between;
             padding: 0 20px; border-bottom: 1px solid rgba(0,0,0,0.05);
             z-index: 1000; backdrop-filter: blur(10px); flex-shrink: 0;
         }
-        body:not(.light-theme) .header { border-bottom: 1px solid rgba(255,255,255,0.05); }
         .header h1 { font-size: 14px; letter-spacing: 2px; color: var(--accent-gold); margin: 0; }
         
         .view-stage {
@@ -67,70 +53,51 @@
         
         #flipbook {
             display: none; background-color: transparent; border-radius: 4px;
-            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1), box-shadow 0.3s;
-            /* Force the fixed size on the container too */
             width: var(--book-w); height: var(--book-h);
         }
         
         .page { 
             background: var(--bg-color); overflow: hidden; position: relative;
-            width: var(--book-w); height: var(--book-h);
+            width: 100%; height: 100%;
         }
-        .page-blank { background: var(--bg-color); width: 100%; height: 100%; }
-        
         .page-content {
             position: relative; width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center; overflow: hidden;
-            box-sizing: border-box;
         }
         
-        /* 3D Pillar Frame */
-        .pillar-container {
+        /* Fixed Pillar Design */
+        .pillar {
+            position: absolute; top: 0; bottom: 0; width: var(--pillar-w);
+            background: linear-gradient(to right, #111, #333, #111);
+            z-index: 20; box-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+        .pillar-l { left: 0; border-right: 1px solid rgba(255,255,255,0.1); }
+        .pillar-r { right: 0; border-left: 1px solid rgba(255,255,255,0.1); }
+        
+        .img-container {
             position: relative; width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center;
-            overflow: hidden; box-sizing: border-box;
+            padding: 0 var(--pillar-w); box-sizing: border-box; z-index: 10;
         }
         
-        .pillar-left, .pillar-right {
-            position: absolute; top: 0; bottom: 0; width: var(--pillar-width);
-            z-index: 10; box-shadow: 0 0 15px rgba(0,0,0,0.5);
-        }
-        
-        .pillar-left {
-            left: 0;
-            background: linear-gradient(to right, var(--pillar-grad-end), var(--pillar-grad-mid), var(--pillar-grad-start));
-            border-right: 1px solid rgba(255,255,255,0.05);
-        }
-        
-        .pillar-right {
-            right: 0;
-            background: linear-gradient(to left, var(--pillar-grad-end), var(--pillar-grad-mid), var(--pillar-grad-start));
-            border-left: 1px solid rgba(255,255,255,0.05);
-        }
-        
-        .img-wrapper {
-            position: relative; width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            padding: 0 var(--pillar-width); /* Space for pillars */
-            box-sizing: border-box; z-index: 5;
+        .page-img {
+            max-width: 100%; max-height: 100%;
+            object-fit: contain; /* This auto-sizes the image while sustaining detailing */
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
         }
 
-        .page-img {
-            width: 100%; height: 100%;
-            object-fit: contain; /* Standardizes image fit while maintaining detail */
-            z-index: 5;
-            box-shadow: 0 0 20px rgba(0,0,0,0.4);
-        }
-        
-        /* Cover Logic: No pillars, full bleed */
-        .is-cover .pillar-left, .is-cover .pillar-right { display: none; }
-        .is-cover .img-wrapper { padding: 0; }
-        .is-cover .page-img { width: 100%; height: 100%; object-fit: cover; box-shadow: none; }
+        /* Logic for orientations */
+        .is-portrait .page-img { height: 100%; width: auto; }
+        .is-landscape .page-img { width: 100%; height: auto; }
+
+        /* Exclude covers from pillars and forced sizing */
+        .is-cover .pillar { display: none; }
+        .is-cover .img-container { padding: 0; }
+        .is-cover .page-img { width: 100%; height: 100%; object-fit: cover; }
 
         .page-bg {
-            position: absolute; top: -20px; left: -20px; right: -20px; bottom: -20px;
-            width: calc(100% + 40px); height: calc(100% + 40px);
-            object-fit: cover; filter: blur(30px) brightness(0.15); opacity: 0.5; z-index: 1;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; filter: blur(30px) brightness(0.2); opacity: 0.6; z-index: 1;
         }
 
         .footer {
@@ -139,29 +106,20 @@
             padding: 0 20px; border-top: 1px solid rgba(255,255,255,0.05); 
             z-index: 1000; flex-shrink: 0;
         }
-        .btn-tool {
-            background: none; border: none; color: #888; cursor: pointer;
-            padding: 10px; border-radius: 50%; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .btn-tool { background: none; border: none; color: #888; cursor: pointer; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .btn-tool:hover { color: var(--btn-hover-text); background: var(--btn-hover-bg); }
         .page-counter { font-size: 12px; font-variant-numeric: tabular-nums; min-width: 60px; text-align: center; }
         
         #loader { text-align: center; }
-        .spinner {
-            width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.1);
-            border-top-color: var(--accent-gold); border-radius: 50%;
-            animation: spin 1s linear infinite; margin: 0 auto 10px;
-        }
+        .spinner { width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--accent-gold); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         #splash-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0a0a0a; display: flex; align-items: center; justify-content: center;
-            z-index: 9999; transition: opacity 1s ease-out, visibility 1s;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a;
+            display: flex; align-items: center; justify-content: center; z-index: 9999;
+            transition: opacity 1s ease-out, visibility 1s;
         }
         #splash-screen.hidden { opacity: 0; visibility: hidden; }
-        .splash-content { max-width: 80%; text-align: center; animation: pulse 2s infinite ease-in-out; }
         .splash-img { max-width: 100%; max-height: 70vh; border-radius: 8px; }
     </style>
 </head>
@@ -174,24 +132,14 @@
     </div>
     <div class="app-container">
         <header class="header">
-            <div style="display: flex; align-items: center; gap: 20px; flex: 1; overflow: hidden;">
-                <div id="logo-container" style="display: flex; align-items: center; gap: 10px; cursor: pointer;" title="Toggle Theme">
-                    <i id="theme-logo" data-lucide="moon"></i>
-                </div>
+            <div style="display: flex; align-items: center; gap: 20px; flex: 1;">
+                <div id="logo-container" style="cursor: pointer;"><i id="theme-logo" data-lucide="moon"></i></div>
                 <h1>HKSSL &#128141; &#127881;</h1>
-                <div class="marquee-container" style="flex: 1; overflow: hidden;">
-                    <marquee behavior="scroll" direction="left" scrollamount="5" style="color: var(--accent-gold); font-size: 12px;">
-                        Congratulations to HK & SSL on Special Day! ✨ 💍 🥂 🎊 ❤️
-                    </marquee>
-                </div>
             </div>
-            <button class="btn-tool" id="btn-fs-header" title="Fullscreen"><i data-lucide="maximize"></i></button>
+            <button class="btn-tool" id="btn-fs-header"><i data-lucide="maximize"></i></button>
         </header>
         <main class="view-stage">
-            <div id="loader">
-                <div class="spinner"></div>
-                <p style="font-size: 12px; opacity: 0.5;">Generating Experience...</p>
-            </div>
+            <div id="loader"><div class="spinner"></div><p style="font-size: 12px; opacity: 0.5;">Generating Experience...</p></div>
             <div id="flipbook"></div>
         </main>
         <footer class="footer">
@@ -203,7 +151,7 @@
                 <button class="btn-tool" id="btn-next"><i data-lucide="chevron-right"></i></button>
                 <button class="btn-tool" id="btn-last"><i data-lucide="chevrons-right"></i></button>
             </div>
-            <div style="display: flex; justify-content: flex-end; flex: 1;">
+            <div style="flex: 1; display: flex; justify-content: flex-end;">
                 <button class="btn-tool" id="btn-mute"><i data-lucide="volume-2"></i></button>
             </div>
         </footer>
@@ -214,11 +162,10 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const splash = document.getElementById('splash-screen');
             setTimeout(() => splash.classList.add('hidden'), 3000);
-
+            
             const themeLogo = document.getElementById('theme-logo');
             const applyTheme = (isDark) => {
-                if (isDark) document.body.classList.remove('light-theme');
-                else document.body.classList.add('light-theme');
+                document.body.classList.toggle('light-theme', !isDark);
                 themeLogo.setAttribute('data-lucide', isDark ? 'moon' : 'sun');
                 if (window.lucide) lucide.createIcons();
             };
@@ -226,8 +173,6 @@
             lucide.createIcons();
 
             const bookEl = document.getElementById('flipbook');
-            const currEl = document.getElementById('curr');
-            const totalEl = document.getElementById('total');
             const music = document.getElementById('bg-music');
 
             try {
@@ -236,7 +181,7 @@
                 let pages = data.pages;
                 if (data.music) music.src = data.music;
                 if (pages.length % 2 !== 0) pages.splice(pages.length - 1, 0, { isBlank: true });
-                totalEl.textContent = pages.length;
+                document.getElementById('total').textContent = pages.length;
 
                 pages.forEach((p, index) => {
                     const div = document.createElement("div");
@@ -248,26 +193,28 @@
                     } else {
                         div.innerHTML = `
                             <div class="page-content">
-                                ${!isCover ? `<img class="page-bg" src="${p.src}">` : ''}
-                                <div class="pillar-container">
-                                    <div class="pillar-left"></div>
-                                    <div class="img-wrapper">
-                                        <img class="page-img" src="${p.src}" alt="${p.alt}">
-                                    </div>
-                                    <div class="pillar-right"></div>
+                                ${!isCover ? '<img class="page-bg" src="' + p.src + '">' : ''}
+                                <div class="pillar pillar-l"></div>
+                                <div class="img-container">
+                                    <img class="page-img" src="${p.src}" alt="${p.alt}">
                                 </div>
+                                <div class="pillar pillar-r"></div>
                             </div>`;
+                        
+                        // Detect Orientation
+                        const img = new Image();
+                        img.onload = () => {
+                            if (img.naturalHeight > img.naturalWidth) div.classList.add('is-portrait');
+                            else div.classList.add('is-landscape');
+                        };
+                        img.src = p.src;
                     }
                     bookEl.appendChild(div);
                 });
 
-                // Strictly Fixed Page Size
                 const flip = new St.PageFlip(bookEl, {
-                    width: 550, height: 367, // Fixed 3:2 landscape ratio
-                    size: "fixed", // Changed from "stretch" to "fixed" as per requirement
-                    autoSize: false, // Disabling autoSize to maintain strict dimensions
-                    centeringPerspective: true,
-                    showCover: true, mobileScrollSupport: true, flippingTime: 1200, usePortrait: true
+                    width: 550, height: 367, size: "fixed", autoSize: false,
+                    showCover: true, mobileScrollSupport: true, flippingTime: 1000, usePortrait: true
                 });
 
                 flip.loadFromHTML(document.querySelectorAll('.page'));
@@ -275,8 +222,8 @@
                 bookEl.style.display = 'block';
 
                 flip.on("flip", (e) => { 
-                    currEl.textContent = e.data + 1;
-                    if (e.data > 0 && e.data < pages.length - 1) music.play().catch(e => {});
+                    document.getElementById('curr').textContent = e.data + 1;
+                    if (e.data > 0 && e.data < pages.length - 1) music.play().catch(() => {});
                     else music.pause();
                 });
 
